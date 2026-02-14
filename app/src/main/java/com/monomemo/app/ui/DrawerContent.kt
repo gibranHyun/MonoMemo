@@ -1,15 +1,21 @@
 package com.monomemo.app.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,6 +34,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.monomemo.app.data.db.NoteEntity
+import com.monomemo.app.ui.components.BrandStripe
+import com.monomemo.app.ui.components.MiniPencilIcon
 
 @Composable
 fun DrawerContent(
@@ -57,24 +65,44 @@ fun DrawerContent(
             .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
-        // Header
+        // Brand Header
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = "MonoMemo",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            TextButton(onClick = {
-                onNewNote()
-                onCloseDrawer()
-            }) {
-                Text("+", style = MaterialTheme.typography.titleLarge)
+            MiniPencilIcon()
+            Column(modifier = Modifier.weight(1f).padding(start = 8.dp)) {
+                Text(
+                    text = "MonoMemo",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = "오프라인 메모장",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .background(MaterialTheme.colorScheme.primary, CircleShape)
+                    .clickable {
+                        onNewNote()
+                        onCloseDrawer()
+                    },
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    "+",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                )
             }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        BrandStripe()
 
         // Search
         TextField(
@@ -102,25 +130,41 @@ fun DrawerContent(
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(filteredNotes, key = { it.id }) { note ->
                 val isSelected = note.id == currentNoteId
-                Text(
-                    text = note.title.ifEmpty { "제목 없음" },
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                    color = if (isSelected) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
                             onNoteSelect(note.id)
                             onCloseDrawer()
-                        }
-                        .padding(vertical = 10.dp, horizontal = 4.dp),
-                )
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    // Accent left bar for selected note
+                    Box(
+                        modifier = Modifier
+                            .width(3.dp)
+                            .height(32.dp)
+                            .background(
+                                if (isSelected) MaterialTheme.colorScheme.primary
+                                else Color.Transparent,
+                            ),
+                    )
+                    Text(
+                        text = note.title.ifEmpty { "제목 없음" },
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                        color = if (isSelected) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(vertical = 10.dp, horizontal = 8.dp),
+                    )
+                }
             }
         }
 

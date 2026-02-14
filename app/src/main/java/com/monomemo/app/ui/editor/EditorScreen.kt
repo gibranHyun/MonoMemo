@@ -1,16 +1,23 @@
 package com.monomemo.app.ui.editor
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -46,6 +53,8 @@ import com.monomemo.app.ui.theme.HighlightAllDark
 import com.monomemo.app.ui.theme.HighlightAllLight
 import com.monomemo.app.ui.theme.HighlightCurrentDark
 import com.monomemo.app.ui.theme.HighlightCurrentLight
+import com.monomemo.app.ui.components.PencilEmptyState
+import com.monomemo.app.ui.theme.AccentOrange
 
 @Composable
 fun EditorScreen(
@@ -99,21 +108,34 @@ fun EditorScreen(
     val charCount = text.length
 
     Column(modifier = modifier.fillMaxSize()) {
-        // Title
-        TextField(
-            value = title,
-            onValueChange = { viewModel.onTitleChange(it) },
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("제목") },
-            singleLine = true,
-            textStyle = MaterialTheme.typography.headlineSmall,
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-            ),
-        )
+        // Title with accent left border
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min),
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .fillMaxHeight()
+                    .padding(vertical = 8.dp)
+                    .background(MaterialTheme.colorScheme.primary),
+            )
+            TextField(
+                value = title,
+                onValueChange = { viewModel.onTitleChange(it) },
+                modifier = Modifier.weight(1f),
+                placeholder = { Text("제목") },
+                singleLine = true,
+                textStyle = MaterialTheme.typography.headlineSmall,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                ),
+            )
+        }
 
         // Editor body
         Row(
@@ -162,25 +184,28 @@ fun EditorScreen(
                 visualTransformation = highlightTransformation,
                 onTextLayout = { textLayoutResult = it },
                 decorationBox = { innerTextField ->
-                    if (content.text.isEmpty()) {
-                        Text(
-                            text = "내용을 입력하세요",
-                            style = TextStyle(
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                            ),
-                        )
+                    Box {
+                        if (content.text.isEmpty()) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                PencilEmptyState("메모를 시작하세요")
+                            }
+                        }
+                        innerTextField()
                     }
-                    innerTextField()
                 },
             )
         }
 
-        // Bottom bar: tab button + counter
+        // Bottom bar: tab button + counter (warm frame tint)
         HorizontalDivider(color = MaterialTheme.colorScheme.outline)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surfaceContainerLow)
                 .padding(horizontal = 8.dp, vertical = 2.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -192,11 +217,21 @@ fun EditorScreen(
                 )
             }
             Box(modifier = Modifier.weight(1f))
-            Text(
-                text = "${lineCount}줄 · ${charCount}자",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "${lineCount}줄",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Canvas(modifier = Modifier.padding(horizontal = 6.dp).size(4.dp)) {
+                    drawCircle(AccentOrange)
+                }
+                Text(
+                    text = "${charCount}자",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
     }
 }

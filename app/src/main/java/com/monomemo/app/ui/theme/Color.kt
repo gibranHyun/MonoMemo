@@ -9,6 +9,7 @@ val AccentLime = Color(0xFF8BC34A)
 val AccentPink = Color(0xFFE91E63)
 
 // Light — warm gray
+val LightFrameTint = Color(0xFFEAE9E6)
 val LightBackground = Color(0xFFF2F1EF)
 val LightSurface = Color(0xFFFFFFFF)
 val LightOnBackground = Color(0xFF1E2433)
@@ -19,6 +20,7 @@ val LightPrimary = AccentOrange
 val LightOnPrimary = Color(0xFFFFFFFF)
 
 // Dark — navy from poster circle
+val DarkFrameTint = Color(0xFF212B3B)
 val DarkBackground = Color(0xFF1A2433)
 val DarkSurface = Color(0xFF222C3C)
 val DarkOnBackground = Color(0xFFE8E8E8)

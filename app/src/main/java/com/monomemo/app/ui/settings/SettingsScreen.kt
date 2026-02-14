@@ -32,6 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.monomemo.app.data.settings.SettingsDataStore
+import com.monomemo.app.ui.theme.AccentBlue
+import com.monomemo.app.ui.theme.AccentLime
+import com.monomemo.app.ui.theme.AccentOrange
+import com.monomemo.app.ui.theme.AccentPink
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -71,12 +75,21 @@ fun SettingsScreen(
                 .padding(horizontal = 16.dp),
         ) {
             // Theme
-            Text(
-                "테마",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 8.dp),
-            )
+            ) {
+                Text(
+                    "☀",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = AccentOrange,
+                )
+                Text(
+                    "  테마",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             listOf("system" to "시스템", "light" to "라이트", "dark" to "다크").forEach { (value, label) ->
                 Text(
                     text = label,
@@ -104,7 +117,13 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    "폰트 크기",
+                    "Aa",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = AccentBlue,
+                )
+                Text(
+                    "  폰트 크기",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -135,6 +154,7 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
             ) {
+                Text("↩ ", style = MaterialTheme.typography.bodyMedium, color = AccentLime)
                 Text(
                     "줄바꿈",
                     style = MaterialTheme.typography.bodyMedium,
@@ -159,6 +179,7 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
             ) {
+                Text("# ", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = AccentPink)
                 Text(
                     "줄 번호",
                     style = MaterialTheme.typography.bodyMedium,

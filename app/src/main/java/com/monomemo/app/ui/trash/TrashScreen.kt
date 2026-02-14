@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.monomemo.app.data.db.NoteEntity
+import com.monomemo.app.ui.components.EmptyTrashState
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -77,11 +78,7 @@ fun TrashScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Text(
-                        text = "비어있음",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    EmptyTrashState()
                 }
             } else {
                 LazyColumn {

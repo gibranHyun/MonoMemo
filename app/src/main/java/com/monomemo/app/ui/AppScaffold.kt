@@ -4,8 +4,11 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
@@ -39,6 +42,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import com.monomemo.app.ui.components.BrandStripe
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.monomemo.app.MonoMemoApp
 import com.monomemo.app.ui.about.AboutScreen
@@ -109,7 +114,8 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                 val success = withContext(Dispatchers.IO) {
                     try {
                         context.contentResolver.openOutputStream(uri)?.use { stream ->
-                            stream.write(editorViewModel.content.value.text.toByteArray())
+                            stream.write(byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte()))
+                            stream.write(editorViewModel.content.value.text.toByteArray(Charsets.UTF_8))
                         }
                         true
                     } catch (_: Exception) {
@@ -190,7 +196,9 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                     topBar = {
                         when (editorMode) {
                             EditorMode.Normal -> {
-                                TopAppBar(
+                                Column {
+                                    BrandStripe()
+                                    TopAppBar(
                                     title = {
                                         Text(
                                             text = title.ifEmpty { "MonoMemo" },
@@ -199,7 +207,7 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                         )
                                     },
                                     colors = TopAppBarDefaults.topAppBarColors(
-                                        containerColor = MaterialTheme.colorScheme.background,
+                                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
                                     ),
                                     navigationIcon = {
                                         IconButton(onClick = {
@@ -215,6 +223,13 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                         TextButton(
                                             onClick = { editorViewModel.undo() },
                                             enabled = canUndo,
+                                            modifier = Modifier
+                                                .padding(horizontal = 2.dp)
+                                                .border(
+                                                    1.dp,
+                                                    MaterialTheme.colorScheme.outline,
+                                                    RoundedCornerShape(6.dp),
+                                                ),
                                         ) {
                                             Text(
                                                 "↩",
@@ -226,6 +241,13 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                         TextButton(
                                             onClick = { editorViewModel.redo() },
                                             enabled = canRedo,
+                                            modifier = Modifier
+                                                .padding(horizontal = 2.dp)
+                                                .border(
+                                                    1.dp,
+                                                    MaterialTheme.colorScheme.outline,
+                                                    RoundedCornerShape(6.dp),
+                                                ),
                                         ) {
                                             Text(
                                                 "↪",
@@ -296,6 +318,7 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                         }
                                     },
                                 )
+                                }
                             }
 
                             EditorMode.Search -> {
