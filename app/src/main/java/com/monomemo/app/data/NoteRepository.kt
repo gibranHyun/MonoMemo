@@ -18,7 +18,10 @@ class NoteRepository(private val dao: NoteDao) {
 
     suspend fun update(note: NoteEntity) = dao.update(note)
 
-    suspend fun softDelete(id: Long) = dao.softDelete(id)
+    suspend fun updateContent(id: Long, title: String, content: String, titleManuallyEdited: Boolean) =
+        dao.updateContent(id, title, content, titleManuallyEdited, System.currentTimeMillis())
+
+    suspend fun softDelete(id: Long) = dao.softDelete(id, System.currentTimeMillis())
 
     suspend fun restore(id: Long) = dao.restore(id)
 

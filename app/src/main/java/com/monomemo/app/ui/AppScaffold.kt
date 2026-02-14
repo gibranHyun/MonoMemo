@@ -10,12 +10,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.DrawerValue
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,7 +49,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.monomemo.app.ui.components.BrandStripe
+import com.monomemo.app.ui.theme.AccentBlue
+import com.monomemo.app.ui.theme.AccentLime
+import com.monomemo.app.ui.theme.AccentOrange
+import com.monomemo.app.ui.theme.AccentPink
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.monomemo.app.MonoMemoApp
 import com.monomemo.app.ui.about.AboutScreen
@@ -233,7 +244,7 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                         ) {
                                             Text(
                                                 "↩",
-                                                style = MaterialTheme.typography.titleMedium,
+                                                fontSize = 40.sp,
                                                 color = if (canUndo) MaterialTheme.colorScheme.onSurface
                                                     else MaterialTheme.colorScheme.outline,
                                             )
@@ -251,7 +262,7 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                         ) {
                                             Text(
                                                 "↪",
-                                                style = MaterialTheme.typography.titleMedium,
+                                                fontSize = 40.sp,
                                                 color = if (canRedo) MaterialTheme.colorScheme.onSurface
                                                     else MaterialTheme.colorScheme.outline,
                                             )
@@ -273,6 +284,9 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                             onDismissRequest = { showMenu = false },
                                         ) {
                                             DropdownMenuItem(
+                                                leadingIcon = {
+                                                    Icon(Icons.Default.Share, null, tint = AccentBlue, modifier = Modifier.size(18.dp))
+                                                },
                                                 text = { Text("공유") },
                                                 onClick = {
                                                     showMenu = false
@@ -287,6 +301,9 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                                 },
                                             )
                                             DropdownMenuItem(
+                                                leadingIcon = {
+                                                    Canvas(modifier = Modifier.size(8.dp)) { drawCircle(AccentOrange) }
+                                                },
                                                 text = { Text("파일로 저장") },
                                                 onClick = {
                                                     showMenu = false
@@ -295,20 +312,39 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                                 },
                                             )
                                             DropdownMenuItem(
+                                                leadingIcon = {
+                                                    Canvas(modifier = Modifier.size(8.dp)) { drawCircle(AccentLime) }
+                                                },
                                                 text = { Text("파일 열기") },
                                                 onClick = {
                                                     showMenu = false
                                                     importLauncher.launch(arrayOf("text/plain", "text/*"))
                                                 },
                                             )
+                                            HorizontalDivider()
                                             DropdownMenuItem(
-                                                text = { Text("휴지통으로 이동") },
+                                                leadingIcon = {
+                                                    Icon(Icons.Default.Delete, null, tint = AccentPink, modifier = Modifier.size(18.dp))
+                                                },
+                                                text = { Text("삭제", color = AccentPink) },
                                                 onClick = {
                                                     showMenu = false
-                                                    currentNoteId?.let { appViewModel.deleteNote(it) }
+                                                    currentNoteId?.let {
+                                                        appViewModel.deleteNote(it)
+                                                        scope.launch {
+                                                            snackbarHostState.showSnackbar(
+                                                                message = "휴지통으로 이동되었습니다",
+                                                                duration = SnackbarDuration.Short,
+                                                            )
+                                                        }
+                                                    }
                                                 },
                                             )
+                                            HorizontalDivider()
                                             DropdownMenuItem(
+                                                leadingIcon = {
+                                                    Icon(Icons.Default.Info, null, tint = AccentBlue, modifier = Modifier.size(18.dp))
+                                                },
                                                 text = { Text("정보/라이선스") },
                                                 onClick = {
                                                     showMenu = false

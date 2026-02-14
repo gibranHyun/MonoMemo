@@ -27,6 +27,9 @@ interface NoteDao {
     @Query("SELECT * FROM notes WHERE id = :id")
     fun getByIdFlow(id: Long): Flow<NoteEntity?>
 
+    @Query("UPDATE notes SET title = :title, content = :content, titleManuallyEdited = :titleManuallyEdited, updatedAt = :updatedAt WHERE id = :id AND deletedAt IS NULL")
+    suspend fun updateContent(id: Long, title: String, content: String, titleManuallyEdited: Boolean, updatedAt: Long)
+
     @Query("UPDATE notes SET deletedAt = :deletedAt WHERE id = :id")
     suspend fun softDelete(id: Long, deletedAt: Long = System.currentTimeMillis())
 

@@ -329,27 +329,23 @@ class EditorViewModel(
         saveJob = null
         val note = currentNote ?: return
         viewModelScope.launch {
-            noteRepository.update(
-                note.copy(
-                    title = _title.value,
-                    content = _content.value.text,
-                    titleManuallyEdited = _titleManuallyEdited.value,
-                    updatedAt = System.currentTimeMillis(),
-                ),
+            noteRepository.updateContent(
+                id = note.id,
+                title = _title.value,
+                content = _content.value.text,
+                titleManuallyEdited = _titleManuallyEdited.value,
             )
         }
     }
 
     private suspend fun performSave() {
         val note = currentNote ?: return
-        val updated = note.copy(
+        noteRepository.updateContent(
+            id = note.id,
             title = _title.value,
             content = _content.value.text,
             titleManuallyEdited = _titleManuallyEdited.value,
-            updatedAt = System.currentTimeMillis(),
         )
-        noteRepository.update(updated)
-        currentNote = updated
     }
 
     override fun onCleared() {
