@@ -2,6 +2,12 @@
 
 오프라인 초경량 노트 에디터 Android 앱
 
+## Screenshots
+
+| Editor (Light) | Drawer | Settings | Editor (Dark) |
+|:-:|:-:|:-:|:-:|
+| ![Editor](screenshots/editor.png) | ![Drawer](screenshots/drawer.png) | ![Settings](screenshots/settings.png) | ![Dark](screenshots/editor_dark.png) |
+
 ## Features
 
 - **에디터** — D2Coding 모노스페이스 폰트, 줄 번호, 글자/줄 카운터
