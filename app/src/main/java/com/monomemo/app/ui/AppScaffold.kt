@@ -231,41 +231,71 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                         }
                                     },
                                     actions = {
-                                        TextButton(
+                                        IconButton(
                                             onClick = { editorViewModel.undo() },
                                             enabled = canUndo,
-                                            modifier = Modifier
-                                                .padding(horizontal = 2.dp)
-                                                .border(
-                                                    1.dp,
-                                                    MaterialTheme.colorScheme.outline,
-                                                    RoundedCornerShape(6.dp),
-                                                ),
                                         ) {
-                                            Text(
-                                                "↩",
-                                                fontSize = 40.sp,
-                                                color = if (canUndo) MaterialTheme.colorScheme.onSurface
-                                                    else MaterialTheme.colorScheme.outline,
-                                            )
+                                            val undoColor = if (canUndo) MaterialTheme.colorScheme.onSurface
+                                                else MaterialTheme.colorScheme.outline
+                                            Canvas(modifier = Modifier.size(24.dp)) {
+                                                val w = size.width
+                                                val h = size.height
+                                                val stroke = androidx.compose.ui.graphics.drawscope.Stroke(
+                                                    width = 2.5.dp.toPx(),
+                                                    cap = androidx.compose.ui.graphics.StrokeCap.Round,
+                                                )
+                                                // Arc (counter-clockwise arrow body)
+                                                drawArc(
+                                                    color = undoColor,
+                                                    startAngle = -180f,
+                                                    sweepAngle = 250f,
+                                                    useCenter = false,
+                                                    topLeft = androidx.compose.ui.geometry.Offset(w * 0.15f, h * 0.2f),
+                                                    size = androidx.compose.ui.geometry.Size(w * 0.7f, h * 0.7f),
+                                                    style = stroke,
+                                                )
+                                                // Arrowhead
+                                                val path = androidx.compose.ui.graphics.Path().apply {
+                                                    moveTo(w * 0.15f, h * 0.25f)
+                                                    lineTo(w * 0.15f, h * 0.58f)
+                                                    lineTo(w * 0.42f, h * 0.45f)
+                                                    close()
+                                                }
+                                                drawPath(path, color = undoColor)
+                                            }
                                         }
-                                        TextButton(
+                                        IconButton(
                                             onClick = { editorViewModel.redo() },
                                             enabled = canRedo,
-                                            modifier = Modifier
-                                                .padding(horizontal = 2.dp)
-                                                .border(
-                                                    1.dp,
-                                                    MaterialTheme.colorScheme.outline,
-                                                    RoundedCornerShape(6.dp),
-                                                ),
                                         ) {
-                                            Text(
-                                                "↪",
-                                                fontSize = 40.sp,
-                                                color = if (canRedo) MaterialTheme.colorScheme.onSurface
-                                                    else MaterialTheme.colorScheme.outline,
-                                            )
+                                            val redoColor = if (canRedo) MaterialTheme.colorScheme.onSurface
+                                                else MaterialTheme.colorScheme.outline
+                                            Canvas(modifier = Modifier.size(24.dp)) {
+                                                val w = size.width
+                                                val h = size.height
+                                                val stroke = androidx.compose.ui.graphics.drawscope.Stroke(
+                                                    width = 2.5.dp.toPx(),
+                                                    cap = androidx.compose.ui.graphics.StrokeCap.Round,
+                                                )
+                                                // Arc (clockwise arrow body)
+                                                drawArc(
+                                                    color = redoColor,
+                                                    startAngle = -70f,
+                                                    sweepAngle = 250f,
+                                                    useCenter = false,
+                                                    topLeft = androidx.compose.ui.geometry.Offset(w * 0.15f, h * 0.2f),
+                                                    size = androidx.compose.ui.geometry.Size(w * 0.7f, h * 0.7f),
+                                                    style = stroke,
+                                                )
+                                                // Arrowhead
+                                                val path = androidx.compose.ui.graphics.Path().apply {
+                                                    moveTo(w * 0.85f, h * 0.25f)
+                                                    lineTo(w * 0.85f, h * 0.58f)
+                                                    lineTo(w * 0.58f, h * 0.45f)
+                                                    close()
+                                                }
+                                                drawPath(path, color = redoColor)
+                                            }
                                         }
                                         IconButton(onClick = { editorViewModel.enterSearch() }) {
                                             Icon(
