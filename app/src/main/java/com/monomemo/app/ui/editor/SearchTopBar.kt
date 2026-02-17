@@ -26,8 +26,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.monomemo.app.R
 
 @Composable
 fun SearchTopBar(
@@ -69,14 +71,14 @@ fun SearchTopBar(
             modifier = Modifier.fillMaxWidth(),
         ) {
             IconButton(onClick = onClose) {
-                Icon(Icons.Default.Close, contentDescription = "검색 닫기")
+                Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close_search))
             }
 
             TextField(
                 value = findQuery,
                 onValueChange = onFindQueryChange,
                 modifier = Modifier.weight(1f),
-                placeholder = { Text("찾기", style = MaterialTheme.typography.bodyMedium) },
+                placeholder = { Text(stringResource(R.string.find_placeholder), style = MaterialTheme.typography.bodyMedium) },
                 singleLine = true,
                 textStyle = MaterialTheme.typography.bodyMedium,
                 colors = underlineColors,
@@ -92,10 +94,10 @@ fun SearchTopBar(
             )
 
             IconButton(onClick = onPrev, enabled = matchCount > 0) {
-                Icon(Icons.Default.KeyboardArrowUp, contentDescription = "이전")
+                Icon(Icons.Default.KeyboardArrowUp, contentDescription = stringResource(R.string.previous_match))
             }
             IconButton(onClick = onNext, enabled = matchCount > 0) {
-                Icon(Icons.Default.KeyboardArrowDown, contentDescription = "다음")
+                Icon(Icons.Default.KeyboardArrowDown, contentDescription = stringResource(R.string.next_match))
             }
         }
 
@@ -129,7 +131,7 @@ fun SearchTopBar(
             Spacer(modifier = Modifier.weight(1f))
             TextButton(onClick = onToggleShowReplace) {
                 Text(
-                    if (showReplace) "바꾸기 숨기기" else "바꾸기",
+                    stringResource(if (showReplace) R.string.hide_replace else R.string.show_replace),
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
@@ -148,24 +150,24 @@ fun SearchTopBar(
                     value = replaceQuery,
                     onValueChange = onReplaceQueryChange,
                     modifier = Modifier.weight(1f),
-                    placeholder = { Text("바꾸기", style = MaterialTheme.typography.bodyMedium) },
+                    placeholder = { Text(stringResource(R.string.replace_placeholder), style = MaterialTheme.typography.bodyMedium) },
                     singleLine = true,
                     textStyle = MaterialTheme.typography.bodyMedium,
                     colors = underlineColors,
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 TextButton(onClick = onReplaceOne, enabled = matchCount > 0) {
-                    Text("하나", style = MaterialTheme.typography.bodySmall)
+                    Text(stringResource(R.string.replace_one), style = MaterialTheme.typography.bodySmall)
                 }
                 TextButton(onClick = onReplaceAll, enabled = matchCount > 0) {
-                    Text("모두", style = MaterialTheme.typography.bodySmall)
+                    Text(stringResource(R.string.replace_all), style = MaterialTheme.typography.bodySmall)
                 }
             }
         }
 
         if (limitReached) {
             Text(
-                text = "1000+ 매치. 검색어를 좁혀주세요.",
+                text = stringResource(R.string.match_limit_warning),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 48.dp, vertical = 2.dp),

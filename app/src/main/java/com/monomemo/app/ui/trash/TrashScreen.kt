@@ -3,9 +3,12 @@ package com.monomemo.app.ui.trash
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -23,13 +26,20 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.monomemo.app.R
 import com.monomemo.app.data.db.NoteEntity
 import com.monomemo.app.ui.components.EmptyTrashState
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.monomemo.app.ui.components.RestoreIcon
+import com.monomemo.app.ui.components.TrashCanIcon
+import com.monomemo.app.ui.theme.AccentOrange
+import com.monomemo.app.ui.theme.AccentPink
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,12 +48,17 @@ fun TrashScreen(
     onBack: () -> Unit,
     onRestore: (Long) -> Unit,
     onDeletePermanently: (Long) -> Unit,
+    onEmptyAll: () -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("휴지통", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        stringResource(R.string.trash_title),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                    )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
@@ -52,8 +67,19 @@ fun TrashScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "뒤로",
+                            contentDescription = stringResource(R.string.trash_back),
                         )
+                    }
+                },
+                actions = {
+                    if (trashNotes.isNotEmpty()) {
+                        TextButton(onClick = onEmptyAll) {
+                            Text(
+                                stringResource(R.string.trash_empty_all),
+                                color = AccentPink,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
                     }
                 },
             )
@@ -62,15 +88,34 @@ fun TrashScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp),
+                .padding(innerPadding),
         ) {
-            Text(
-                text = "30일 후 자동 삭제",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(vertical = 8.dp),
-            )
+            // Info banner
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.Top,
+            ) {
+                Text(
+                    text = "\u24D8",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(R.string.trash_info_message))
+                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append(stringResource(R.string.trash_info_days))
+                        }
+                        append(".")
+                    },
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
 
             if (trashNotes.isEmpty()) {
                 Column(
@@ -78,17 +123,22 @@ fun TrashScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    EmptyTrashState()
+                    EmptyTrashState(text = stringResource(R.string.trash_empty))
                 }
             } else {
-                LazyColumn {
+                LazyColumn(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                ) {
                     items(trashNotes, key = { it.id }) { note ->
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         TrashNoteItem(
                             note = note,
                             onRestore = { onRestore(note.id) },
                             onDelete = { onDeletePermanently(note.id) },
                         )
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                    }
+                    item {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                     }
                 }
             }
@@ -102,33 +152,58 @@ private fun TrashNoteItem(
     onRestore: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    val dateFormat = SimpleDateFormat("MM/dd", Locale.getDefault())
-    val deletedDate = note.deletedAt?.let { dateFormat.format(Date(it)) } ?: ""
+    val relativeTime = note.deletedAt?.let { formatRelativeTime(it) } ?: ""
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = note.title.ifEmpty { "제목 없음" },
-                style = MaterialTheme.typography.bodyMedium,
+                text = note.title.ifEmpty { stringResource(R.string.untitled) },
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = deletedDate,
+                text = relativeTime,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        TextButton(onClick = onRestore) {
-            Text("복원", style = MaterialTheme.typography.bodySmall)
+        IconButton(onClick = onRestore) {
+            RestoreIcon(color = AccentOrange)
         }
-        TextButton(onClick = onDelete) {
-            Text("삭제", style = MaterialTheme.typography.bodySmall)
+        IconButton(onClick = onDelete) {
+            TrashCanIcon()
         }
+    }
+}
+
+@Composable
+private fun formatRelativeTime(deletedAt: Long): String {
+    val now = System.currentTimeMillis()
+    val diffMs = now - deletedAt
+    val diffHours = diffMs / (1000 * 60 * 60)
+    val diffDays = diffHours / 24
+    val diffWeeks = diffDays / 7
+
+    val timeStr = when {
+        diffDays < 1 -> {
+            if (diffHours < 1) stringResource(R.string.trash_just_now)
+            else stringResource(R.string.trash_hours, diffHours.toInt())
+        }
+        diffDays < 7 -> stringResource(R.string.trash_days, diffDays.toInt())
+        else -> stringResource(R.string.trash_weeks, diffWeeks.toInt())
+    }
+
+    return if (diffHours < 1) {
+        timeStr
+    } else {
+        stringResource(R.string.trash_deleted_ago, timeStr)
     }
 }

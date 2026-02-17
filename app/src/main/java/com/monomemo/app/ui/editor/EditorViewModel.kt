@@ -19,6 +19,7 @@ enum class EditorMode { Normal, Search }
 
 class EditorViewModel(
     private val noteRepository: NoteRepository,
+    private val defaultTitle: String = "New memo",
 ) : ViewModel() {
 
     private val _title = MutableStateFlow("")
@@ -312,7 +313,7 @@ class EditorViewModel(
         val firstLine = content.lineSequence()
             .map { it.trim() }
             .firstOrNull { it.isNotEmpty() }
-            ?: "새 메모"
+            ?: defaultTitle
         _title.value = if (firstLine.length > 40) firstLine.take(40) + "…" else firstLine
     }
 
@@ -355,10 +356,11 @@ class EditorViewModel(
 
     class Factory(
         private val noteRepository: NoteRepository,
+        private val defaultTitle: String = "New memo",
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return EditorViewModel(noteRepository) as T
+            return EditorViewModel(noteRepository, defaultTitle) as T
         }
     }
 

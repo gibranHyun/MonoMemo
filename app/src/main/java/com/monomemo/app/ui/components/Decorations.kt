@@ -153,7 +153,7 @@ fun EmptyBoxIllustration(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun EmptyTrashState(modifier: Modifier = Modifier) {
+fun EmptyTrashState(text: String, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -161,7 +161,7 @@ fun EmptyTrashState(modifier: Modifier = Modifier) {
         EmptyBoxIllustration()
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "비어있음",
+            text = text,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -189,5 +189,160 @@ fun MiniPencilIcon(modifier: Modifier = Modifier) {
         }
         drawPath(tipPath, Color(0xFFFFDC96))
         drawCircle(Color(0xFF444444), 1.5f.dp.toPx(), Offset(w * 0.5f, h * 0.92f))
+    }
+}
+
+@Composable
+fun RestoreIcon(
+    color: Color = AccentOrange,
+    modifier: Modifier = Modifier,
+) {
+    Canvas(modifier = modifier.size(22.dp)) {
+        val w = size.width
+        val h = size.height
+        val stroke = Stroke(
+            width = 2.dp.toPx(),
+            cap = StrokeCap.Round,
+        )
+        // Circular arrow arc
+        drawArc(
+            color = color,
+            startAngle = -180f,
+            sweepAngle = 270f,
+            useCenter = false,
+            topLeft = Offset(w * 0.15f, h * 0.15f),
+            size = Size(w * 0.7f, h * 0.7f),
+            style = stroke,
+        )
+        // Arrowhead
+        val arrow = Path().apply {
+            moveTo(w * 0.15f, h * 0.2f)
+            lineTo(w * 0.15f, h * 0.52f)
+            lineTo(w * 0.4f, h * 0.38f)
+            close()
+        }
+        drawPath(arrow, color = color)
+    }
+}
+
+@Composable
+fun TrashCanIcon(
+    color: Color = Color(0xFF9E9E9E),
+    modifier: Modifier = Modifier,
+) {
+    Canvas(modifier = modifier.size(22.dp)) {
+        val w = size.width
+        val h = size.height
+        val strokeW = 1.8f.dp.toPx()
+
+        // Lid
+        drawLine(color, Offset(w * 0.2f, h * 0.22f), Offset(w * 0.8f, h * 0.22f), strokeWidth = strokeW, cap = StrokeCap.Round)
+        // Handle
+        drawLine(color, Offset(w * 0.38f, h * 0.22f), Offset(w * 0.38f, h * 0.13f), strokeWidth = strokeW, cap = StrokeCap.Round)
+        drawLine(color, Offset(w * 0.38f, h * 0.13f), Offset(w * 0.62f, h * 0.13f), strokeWidth = strokeW, cap = StrokeCap.Round)
+        drawLine(color, Offset(w * 0.62f, h * 0.13f), Offset(w * 0.62f, h * 0.22f), strokeWidth = strokeW, cap = StrokeCap.Round)
+        // Body (trapezoid)
+        val body = Path().apply {
+            moveTo(w * 0.25f, h * 0.28f)
+            lineTo(w * 0.75f, h * 0.28f)
+            lineTo(w * 0.7f, h * 0.88f)
+            lineTo(w * 0.3f, h * 0.88f)
+            close()
+        }
+        drawPath(body, color = color, style = Stroke(strokeW))
+        // Vertical lines inside
+        drawLine(color, Offset(w * 0.42f, h * 0.38f), Offset(w * 0.42f, h * 0.75f), strokeWidth = 1.2f.dp.toPx())
+        drawLine(color, Offset(w * 0.58f, h * 0.38f), Offset(w * 0.58f, h * 0.75f), strokeWidth = 1.2f.dp.toPx())
+    }
+}
+
+@Composable
+fun SettingsGearIcon(
+    color: Color = Color(0xFF9E9E9E),
+    modifier: Modifier = Modifier,
+) {
+    Canvas(modifier = modifier.size(22.dp)) {
+        val w = size.width
+        val h = size.height
+        val cx = w / 2f
+        val cy = h / 2f
+        val outerR = w * 0.42f
+        val innerR = w * 0.32f
+        val centerR = w * 0.15f
+        val teeth = 6
+        val strokeW = 1.8f.dp.toPx()
+
+        // Gear outline with teeth
+        val gearPath = Path()
+        val toothHalfWidth = Math.PI / teeth * 0.4
+        for (i in 0 until teeth) {
+            val angle = 2.0 * Math.PI * i / teeth - Math.PI / 2.0
+            // Outer tooth
+            val x1 = cx + (outerR * Math.cos(angle - toothHalfWidth)).toFloat()
+            val y1 = cy + (outerR * Math.sin(angle - toothHalfWidth)).toFloat()
+            val x2 = cx + (outerR * Math.cos(angle + toothHalfWidth)).toFloat()
+            val y2 = cy + (outerR * Math.sin(angle + toothHalfWidth)).toFloat()
+            // Inner valley
+            val nextAngle = 2.0 * Math.PI * (i + 0.5) / teeth - Math.PI / 2.0
+            val x3 = cx + (innerR * Math.cos(nextAngle - toothHalfWidth)).toFloat()
+            val y3 = cy + (innerR * Math.sin(nextAngle - toothHalfWidth)).toFloat()
+            val x4 = cx + (innerR * Math.cos(nextAngle + toothHalfWidth)).toFloat()
+            val y4 = cy + (innerR * Math.sin(nextAngle + toothHalfWidth)).toFloat()
+
+            if (i == 0) gearPath.moveTo(x1, y1)
+            else gearPath.lineTo(x1, y1)
+            gearPath.lineTo(x2, y2)
+            gearPath.lineTo(x3, y3)
+            gearPath.lineTo(x4, y4)
+        }
+        gearPath.close()
+        drawPath(gearPath, color = color, style = Stroke(strokeW))
+        // Center circle
+        drawCircle(color = color, radius = centerR, center = Offset(cx, cy), style = Stroke(strokeW))
+    }
+}
+
+@Composable
+fun DrawerTrashIcon(
+    color: Color = Color(0xFF9E9E9E),
+    modifier: Modifier = Modifier,
+) {
+    Canvas(modifier = modifier.size(20.dp)) {
+        val w = size.width
+        val h = size.height
+        val strokeW = 1.6f.dp.toPx()
+
+        // Lid
+        drawLine(color, Offset(w * 0.18f, h * 0.24f), Offset(w * 0.82f, h * 0.24f), strokeWidth = strokeW, cap = StrokeCap.Round)
+        // Handle
+        drawLine(color, Offset(w * 0.38f, h * 0.24f), Offset(w * 0.38f, h * 0.14f), strokeWidth = strokeW, cap = StrokeCap.Round)
+        drawLine(color, Offset(w * 0.38f, h * 0.14f), Offset(w * 0.62f, h * 0.14f), strokeWidth = strokeW, cap = StrokeCap.Round)
+        drawLine(color, Offset(w * 0.62f, h * 0.14f), Offset(w * 0.62f, h * 0.24f), strokeWidth = strokeW, cap = StrokeCap.Round)
+        // Body
+        val body = Path().apply {
+            moveTo(w * 0.24f, h * 0.3f)
+            lineTo(w * 0.76f, h * 0.3f)
+            lineTo(w * 0.71f, h * 0.88f)
+            lineTo(w * 0.29f, h * 0.88f)
+            close()
+        }
+        drawPath(body, color = color, style = Stroke(strokeW))
+    }
+}
+
+@Composable
+fun AppLogoIcon(modifier: Modifier = Modifier) {
+    Canvas(modifier = modifier.size(28.dp)) {
+        val w = size.width
+        val h = size.height
+        val cornerRadius = 6.dp.toPx()
+
+        drawRoundRect(
+            color = AccentOrange,
+            topLeft = Offset(0f, 0f),
+            size = Size(w, h),
+            cornerRadius = androidx.compose.ui.geometry.CornerRadius(cornerRadius, cornerRadius),
+        )
+        // "M" letter in white - intentionally not drawn, just the orange square
     }
 }

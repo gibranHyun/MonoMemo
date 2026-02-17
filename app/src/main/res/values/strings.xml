@@ -1,4 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MonoMemo</string>
+
+    <!-- Editor -->
+    <string name="untitled">Untitled</string>
+    <string name="new_memo">New memo</string>
+    <string name="imported_memo">Imported memo</string>
+    <string name="start_writing">Start writing</string>
+    <string name="tab_label">TAB</string>
+    <string name="line_count">%1$d lines</string>
+    <string name="char_count">%1$d chars</string>
+
+    <!-- AppBar actions -->
+    <string name="open_menu">Open menu</string>
+    <string name="search">Search</string>
+    <string name="more_options">More options</string>
+
+    <!-- Dropdown menu -->
+    <string name="share">Share</string>
+    <string name="save_as_file">Save as file</string>
+    <string name="open_file">Open file</string>
+    <string name="delete">Delete</string>
+    <string name="about_license">About / License</string>
+    <string name="memo_default_name">memo</string>
+
+    <!-- Toast messages -->
+    <string name="file_saved">File saved</string>
+    <string name="save_failed">Save failed</string>
+    <string name="file_imported">File imported</string>
+    <string name="cannot_read_file">Cannot read file</string>
+
+    <!-- Snackbar messages -->
+    <string name="changes_made">%1$d replaced</string>
+    <string name="undo_action">Undo</string>
+    <string name="moved_to_trash">Moved to trash</string>
+
+    <!-- Search -->
+    <string name="close_search">Close search</string>
+    <string name="find_placeholder">Find</string>
+    <string name="previous_match">Previous</string>
+    <string name="next_match">Next</string>
+    <string name="show_replace">Replace</string>
+    <string name="hide_replace">Hide replace</string>
+    <string name="replace_placeholder">Replace</string>
+    <string name="replace_one">One</string>
+    <string name="replace_all">All</string>
+    <string name="match_limit_warning">1000+ matches. Narrow your search.</string>
+
+    <!-- Drawer -->
+    <string name="drawer_new_note">New Note</string>
+    <string name="drawer_new_memo">New memo</string>
+    <string name="drawer_recent">RECENT</string>
+    <string name="drawer_trash">Trash</string>
+    <string name="drawer_settings">Settings</string>
+    <string name="drawer_untitled">Untitled</string>
+
+    <!-- Trash -->
+    <string name="trash_title">Trash</string>
+    <string name="trash_empty">Empty</string>
+    <string name="trash_empty_all">Empty All</string>
+    <string name="trash_info_message">Notes in the trash will be permanently deleted after </string>
+    <string name="trash_info_days">30 days</string>
+    <string name="trash_deleted_ago">Deleted %1$s ago</string>
+    <string name="trash_restore">Restore</string>
+    <string name="trash_delete">Delete</string>
+    <string name="trash_back">Back</string>
+    <string name="trash_days">%1$d days</string>
+    <string name="trash_weeks">%1$d week</string>
+    <string name="trash_hours">%1$d hours</string>
+    <string name="trash_just_now">just now</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_appearance">APPEARANCE</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_mode">Theme Mode</string>
+    <string name="settings_theme_desc">Choose how MonoMemo looks to you.</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_font_size">Font Size</string>
+    <string name="settings_font_size_desc">Adjust for your comfort. Currently %1$dsp</string>
+    <string name="settings_editor_preferences">EDITOR PREFERENCES</string>
+    <string name="settings_word_wrap">Word Wrap</string>
+    <string name="settings_word_wrap_desc">Wrap long lines to fit the screen.</string>
+    <string name="settings_line_numbers">Show Line Numbers</string>
+    <string name="settings_line_numbers_desc">Helpful for technical writing or coding.</string>
+    <string name="settings_version">VERSION %1$s (STABLE)</string>
+    <string name="settings_tagline">Crafted with precision for minimalists who value speed and control.</string>
+    <string name="settings_license">License</string>
+    <string name="settings_privacy_policy">Privacy Policy</string>
+
+    <!-- About -->
+    <string name="about_title">About</string>
 </resources>

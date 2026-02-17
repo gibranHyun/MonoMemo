@@ -18,6 +18,8 @@ enum class AppScreen { Editor, Trash, Settings, About }
 class AppViewModel(
     private val noteRepository: NoteRepository,
     private val settingsDataStore: SettingsDataStore,
+    private val defaultNewTitle: String = "New memo",
+    private val defaultImportTitle: String = "Imported memo",
 ) : ViewModel() {
 
     private val _currentNoteId = MutableStateFlow<Long?>(null)
@@ -41,7 +43,7 @@ class AppViewModel(
         viewModelScope.launch {
             if (noteRepository.getActiveCount() == 0) {
                 val id = noteRepository.insert(
-                    NoteEntity(title = "새 메모", content = ""),
+                    NoteEntity(title = defaultNewTitle, content = ""),
                 )
                 openNote(id)
                 return@launch
@@ -85,7 +87,7 @@ class AppViewModel(
     fun createNewNote() {
         viewModelScope.launch {
             val id = noteRepository.insert(
-                NoteEntity(title = "새 메모", content = ""),
+                NoteEntity(title = defaultNewTitle, content = ""),
             )
             openNote(id)
         }
@@ -116,7 +118,7 @@ class AppViewModel(
             val firstLine = content.lineSequence()
                 .map { it.trim() }
                 .firstOrNull { it.isNotEmpty() }
-                ?: "가져온 메모"
+                ?: defaultImportTitle
             val title = if (firstLine.length > 40) firstLine.take(40) + "…" else firstLine
             val id = noteRepository.insert(
                 NoteEntity(title = title, content = content),
@@ -131,13 +133,21 @@ class AppViewModel(
         }
     }
 
+    fun emptyTrash() {
+        viewModelScope.launch {
+            noteRepository.emptyTrash()
+        }
+    }
+
     class Factory(
         private val noteRepository: NoteRepository,
         private val settingsDataStore: SettingsDataStore,
+        private val defaultNewTitle: String = "New memo",
+        private val defaultImportTitle: String = "Imported memo",
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return AppViewModel(noteRepository, settingsDataStore) as T
+            return AppViewModel(noteRepository, settingsDataStore, defaultNewTitle, defaultImportTitle) as T
         }
     }
 }

@@ -4,11 +4,10 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
@@ -16,6 +15,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.DrawerValue
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
@@ -39,6 +39,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -49,7 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.monomemo.app.R
 import com.monomemo.app.ui.components.BrandStripe
 import com.monomemo.app.ui.theme.AccentBlue
 import com.monomemo.app.ui.theme.AccentLime
@@ -88,11 +90,13 @@ fun AppScaffold() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AppScaffoldContent(app: MonoMemoApp) {
+    val newMemoTitle = stringResource(R.string.new_memo)
+    val importedMemoTitle = stringResource(R.string.imported_memo)
     val appViewModel: AppViewModel = viewModel(
-        factory = AppViewModel.Factory(app.noteRepository, app.settingsDataStore),
+        factory = AppViewModel.Factory(app.noteRepository, app.settingsDataStore, newMemoTitle, importedMemoTitle),
     )
     val editorViewModel: EditorViewModel = viewModel(
-        factory = EditorViewModel.Factory(app.noteRepository),
+        factory = EditorViewModel.Factory(app.noteRepository, newMemoTitle),
     )
     val currentNoteId by appViewModel.currentNoteId.collectAsState()
     val activeNotes by appViewModel.activeNotes.collectAsState()
@@ -135,7 +139,7 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                 }
                 Toast.makeText(
                     context,
-                    if (success) "파일이 저장되었습니다" else "저장에 실패했습니다",
+                    if (success) context.getString(R.string.file_saved) else context.getString(R.string.save_failed),
                     Toast.LENGTH_SHORT,
                 ).show()
             }
@@ -159,9 +163,9 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                 }
                 if (text != null) {
                     appViewModel.importNote(text)
-                    Toast.makeText(context, "파일을 가져왔습니다", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.file_imported), Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(context, "파일을 읽을 수 없습니다", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.cannot_read_file), Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -171,8 +175,8 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
     LaunchedEffect(undoContent) {
         if (undoContent != null) {
             val result = snackbarHostState.showSnackbar(
-                message = "${replaceAllCount}건 변경됨",
-                actionLabel = "되돌리기",
+                message = context.getString(R.string.changes_made, replaceAllCount),
+                actionLabel = context.getString(R.string.undo_action),
                 duration = SnackbarDuration.Long,
             )
             when (result) {
@@ -211,10 +215,26 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                     BrandStripe()
                                     TopAppBar(
                                     title = {
-                                        Text(
-                                            text = title.ifEmpty { "MonoMemo" },
-                                            style = MaterialTheme.typography.titleMedium,
-                                            maxLines = 1,
+                                        BasicTextField(
+                                            value = title,
+                                            onValueChange = { editorViewModel.onTitleChange(it) },
+                                            singleLine = true,
+                                            textStyle = MaterialTheme.typography.titleMedium.copy(
+                                                color = MaterialTheme.colorScheme.onSurface,
+                                            ),
+                                            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                                            decorationBox = { innerTextField ->
+                                                Box {
+                                                    if (title.isEmpty()) {
+                                                        Text(
+                                                            stringResource(R.string.untitled),
+                                                            style = MaterialTheme.typography.titleMedium,
+                                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                        )
+                                                    }
+                                                    innerTextField()
+                                                }
+                                            },
                                         )
                                     },
                                     colors = TopAppBarDefaults.topAppBarColors(
@@ -226,7 +246,7 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                         }) {
                                             Icon(
                                                 imageVector = Icons.Default.Menu,
-                                                contentDescription = "메뉴 열기",
+                                                contentDescription = stringResource(R.string.open_menu),
                                             )
                                         }
                                     },
@@ -300,13 +320,13 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                         IconButton(onClick = { editorViewModel.enterSearch() }) {
                                             Icon(
                                                 imageVector = Icons.Default.Search,
-                                                contentDescription = "검색",
+                                                contentDescription = stringResource(R.string.search),
                                             )
                                         }
                                         IconButton(onClick = { showMenu = true }) {
                                             Icon(
                                                 imageVector = Icons.Default.MoreVert,
-                                                contentDescription = "더보기",
+                                                contentDescription = stringResource(R.string.more_options),
                                             )
                                         }
                                         DropdownMenu(
@@ -317,7 +337,7 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                                 leadingIcon = {
                                                     Icon(Icons.Default.Share, null, tint = AccentBlue, modifier = Modifier.size(18.dp))
                                                 },
-                                                text = { Text("공유") },
+                                                text = { Text(stringResource(R.string.share)) },
                                                 onClick = {
                                                     showMenu = false
                                                     val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -334,10 +354,10 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                                 leadingIcon = {
                                                     Canvas(modifier = Modifier.size(8.dp)) { drawCircle(AccentOrange) }
                                                 },
-                                                text = { Text("파일로 저장") },
+                                                text = { Text(stringResource(R.string.save_as_file)) },
                                                 onClick = {
                                                     showMenu = false
-                                                    val fileName = title.ifEmpty { "메모" }
+                                                    val fileName = title.ifEmpty { context.getString(R.string.memo_default_name) }
                                                     exportLauncher.launch("$fileName.txt")
                                                 },
                                             )
@@ -345,7 +365,7 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                                 leadingIcon = {
                                                     Canvas(modifier = Modifier.size(8.dp)) { drawCircle(AccentLime) }
                                                 },
-                                                text = { Text("파일 열기") },
+                                                text = { Text(stringResource(R.string.open_file)) },
                                                 onClick = {
                                                     showMenu = false
                                                     importLauncher.launch(arrayOf("text/plain", "text/*"))
@@ -356,14 +376,14 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                                 leadingIcon = {
                                                     Icon(Icons.Default.Delete, null, tint = AccentPink, modifier = Modifier.size(18.dp))
                                                 },
-                                                text = { Text("삭제", color = AccentPink) },
+                                                text = { Text(stringResource(R.string.delete), color = AccentPink) },
                                                 onClick = {
                                                     showMenu = false
                                                     currentNoteId?.let {
                                                         appViewModel.deleteNote(it)
                                                         scope.launch {
                                                             snackbarHostState.showSnackbar(
-                                                                message = "휴지통으로 이동되었습니다",
+                                                                message = context.getString(R.string.moved_to_trash),
                                                                 duration = SnackbarDuration.Short,
                                                             )
                                                         }
@@ -375,7 +395,7 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                                 leadingIcon = {
                                                     Icon(Icons.Default.Info, null, tint = AccentBlue, modifier = Modifier.size(18.dp))
                                                 },
-                                                text = { Text("정보/라이선스") },
+                                                text = { Text(stringResource(R.string.about_license)) },
                                                 onClick = {
                                                     showMenu = false
                                                     appViewModel.navigateTo(AppScreen.About)
@@ -427,6 +447,7 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                 onBack = { appViewModel.navigateTo(AppScreen.Editor) },
                 onRestore = { appViewModel.restoreNote(it) },
                 onDeletePermanently = { appViewModel.deletePermanently(it) },
+                onEmptyAll = { appViewModel.emptyTrash() },
             )
         }
 

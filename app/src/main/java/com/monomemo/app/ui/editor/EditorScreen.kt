@@ -1,12 +1,10 @@
 package com.monomemo.app.ui.editor
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -24,8 +22,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -48,6 +45,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.monomemo.app.MonoMemoApp
+import com.monomemo.app.R
 import com.monomemo.app.ui.theme.D2CodingFamily
 import com.monomemo.app.ui.theme.HighlightAllDark
 import com.monomemo.app.ui.theme.HighlightAllLight
@@ -62,7 +60,6 @@ fun EditorScreen(
     viewModel: EditorViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val title by viewModel.title.collectAsState()
     val content by viewModel.content.collectAsState()
     val editorMode by viewModel.editorMode.collectAsState()
     val findResult by viewModel.findResult.collectAsState()
@@ -108,96 +105,68 @@ fun EditorScreen(
     val charCount = text.length
 
     Column(modifier = modifier.fillMaxSize()) {
-        // Title with accent left border
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min),
-        ) {
-            Box(
-                modifier = Modifier
-                    .width(4.dp)
-                    .fillMaxHeight()
-                    .padding(vertical = 8.dp)
-                    .background(MaterialTheme.colorScheme.primary),
-            )
-            TextField(
-                value = title,
-                onValueChange = { viewModel.onTitleChange(it) },
-                modifier = Modifier.weight(1f),
-                placeholder = { Text("제목") },
-                singleLine = true,
-                textStyle = MaterialTheme.typography.headlineSmall,
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                ),
-            )
-        }
-
         // Editor body
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(scrollState),
-        ) {
-            // Line numbers
-            if (lineNumbersEnabled) {
-                val lineNumWidth = (lineCount.toString().length * 10 + 16).dp
-                Column(
-                    modifier = Modifier
-                        .width(lineNumWidth)
-                        .padding(top = 0.dp),
-                    horizontalAlignment = Alignment.End,
-                ) {
-                    for (i in 1..lineCount) {
-                        Text(
-                            text = "$i",
-                            style = TextStyle(
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                                fontFamily = D2CodingFamily,
-                                textAlign = TextAlign.End,
-                            ),
-                            modifier = Modifier.padding(end = 8.dp),
-                        )
+        Box(modifier = Modifier.weight(1f)) {
+            // Editor with scrollable content (always visible)
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 12.dp)
+                    .verticalScroll(scrollState),
+            ) {
+                // Line numbers
+                if (lineNumbersEnabled) {
+                    val lineNumWidth = (lineCount.toString().length * 10 + 16).dp
+                    Column(
+                        modifier = Modifier
+                            .width(lineNumWidth)
+                            .padding(top = 0.dp),
+                        horizontalAlignment = Alignment.End,
+                    ) {
+                        for (i in 1..lineCount) {
+                            Text(
+                                text = "$i",
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                                    fontFamily = D2CodingFamily,
+                                    textAlign = TextAlign.End,
+                                ),
+                                modifier = Modifier.padding(end = 8.dp),
+                            )
+                        }
                     }
                 }
+
+                // Text editor
+                BasicTextField(
+                    value = content,
+                    onValueChange = { viewModel.onContentChange(it) },
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .padding(horizontal = if (lineNumbersEnabled) 4.dp else 16.dp),
+                    textStyle = TextStyle(
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                        fontFamily = D2CodingFamily,
+                    ),
+                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                    visualTransformation = highlightTransformation,
+                    onTextLayout = { textLayoutResult = it },
+                )
             }
 
-            // Text editor
-            BasicTextField(
-                value = content,
-                onValueChange = { viewModel.onContentChange(it) },
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f)
-                    .padding(horizontal = if (lineNumbersEnabled) 4.dp else 16.dp),
-                textStyle = TextStyle(
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                    fontFamily = D2CodingFamily,
-                ),
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                visualTransformation = highlightTransformation,
-                onTextLayout = { textLayoutResult = it },
-                decorationBox = { innerTextField ->
-                    Box {
-                        if (content.text.isEmpty()) {
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                            ) {
-                                PencilEmptyState("메모를 시작하세요")
-                            }
-                        }
-                        innerTextField()
-                    }
-                },
-            )
+            // Empty state overlay (non-interactive, behind cursor)
+            if (content.text.isEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    PencilEmptyState(stringResource(R.string.start_writing))
+                }
+            }
         }
 
         // Bottom bar: tab button + counter (warm frame tint)
@@ -211,7 +180,7 @@ fun EditorScreen(
         ) {
             TextButton(onClick = { viewModel.insertTab() }) {
                 Text(
-                    "TAB",
+                    stringResource(R.string.tab_label),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.primary,
                 )
@@ -219,7 +188,7 @@ fun EditorScreen(
             Box(modifier = Modifier.weight(1f))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "${lineCount}줄",
+                    text = stringResource(R.string.line_count, lineCount),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -227,7 +196,7 @@ fun EditorScreen(
                     drawCircle(AccentOrange)
                 }
                 Text(
-                    text = "${charCount}자",
+                    text = stringResource(R.string.char_count, charCount),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

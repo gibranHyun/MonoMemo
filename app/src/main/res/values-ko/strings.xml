@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Editor -->
+    <string name="untitled">제목 없음</string>
+    <string name="new_memo">새 메모</string>
+    <string name="imported_memo">가져온 메모</string>
+    <string name="start_writing">메모를 시작하세요</string>
+    <string name="line_count">%1$d줄</string>
+    <string name="char_count">%1$d자</string>
+
+    <!-- AppBar actions -->
+    <string name="open_menu">메뉴 열기</string>
+    <string name="search">검색</string>
+    <string name="more_options">더보기</string>
+
+    <!-- Dropdown menu -->
+    <string name="share">공유</string>
+    <string name="save_as_file">파일로 저장</string>
+    <string name="open_file">파일 열기</string>
+    <string name="delete">삭제</string>
+    <string name="about_license">정보/라이선스</string>
+    <string name="memo_default_name">메모</string>
+
+    <!-- Toast messages -->
+    <string name="file_saved">파일이 저장되었습니다</string>
+    <string name="save_failed">저장에 실패했습니다</string>
+    <string name="file_imported">파일을 가져왔습니다</string>
+    <string name="cannot_read_file">파일을 읽을 수 없습니다</string>
+
+    <!-- Snackbar messages -->
+    <string name="changes_made">%1$d건 변경됨</string>
+    <string name="undo_action">되돌리기</string>
+    <string name="moved_to_trash">휴지통으로 이동되었습니다</string>
+
+    <!-- Search -->
+    <string name="close_search">검색 닫기</string>
+    <string name="find_placeholder">찾기</string>
+    <string name="previous_match">이전</string>
+    <string name="next_match">다음</string>
+    <string name="show_replace">바꾸기</string>
+    <string name="hide_replace">바꾸기 숨기기</string>
+    <string name="replace_placeholder">바꾸기</string>
+    <string name="replace_one">하나</string>
+    <string name="replace_all">모두</string>
+    <string name="match_limit_warning">1000+ 매치. 검색어를 좁혀주세요.</string>
+
+    <!-- Drawer -->
+    <string name="drawer_new_note">새 노트</string>
+    <string name="drawer_new_memo">새 메모</string>
+    <string name="drawer_recent">최근</string>
+    <string name="drawer_trash">휴지통</string>
+    <string name="drawer_settings">설정</string>
+    <string name="drawer_untitled">제목 없음</string>
+
+    <!-- Trash -->
+    <string name="trash_title">휴지통</string>
+    <string name="trash_empty">비어있음</string>
+    <string name="trash_empty_all">모두 비우기</string>
+    <string name="trash_info_message">휴지통의 노트는 </string>
+    <string name="trash_info_days">30일</string>
+    <string name="trash_deleted_ago">%1$s 전 삭제</string>
+    <string name="trash_restore">복원</string>
+    <string name="trash_delete">삭제</string>
+    <string name="trash_back">뒤로</string>
+    <string name="trash_days">%1$d일</string>
+    <string name="trash_weeks">%1$d주</string>
+    <string name="trash_hours">%1$d시간</string>
+    <string name="trash_just_now">방금</string>
+
+    <!-- Settings -->
+    <string name="settings_title">설정</string>
+    <string name="settings_appearance">외관</string>
+    <string name="settings_theme">테마</string>
+    <string name="settings_theme_mode">테마 모드</string>
+    <string name="settings_theme_desc">MonoMemo의 외관을 선택하세요.</string>
+    <string name="settings_theme_system">시스템</string>
+    <string name="settings_theme_light">밝은</string>
+    <string name="settings_theme_dark">어두운</string>
+    <string name="settings_font_size">글꼴 크기</string>
+    <string name="settings_font_size_desc">편안한 크기로 조절하세요. 현재 %1$dsp</string>
+    <string name="settings_editor_preferences">에디터 설정</string>
+    <string name="settings_word_wrap">줄바꿈</string>
+    <string name="settings_word_wrap_desc">긴 줄을 화면에 맞게 줄바꿈합니다.</string>
+    <string name="settings_line_numbers">줄 번호 표시</string>
+    <string name="settings_line_numbers_desc">기술 문서 작성이나 코딩에 유용합니다.</string>
+    <string name="settings_version">버전 %1$s (안정)</string>
+    <string name="settings_tagline">속도와 제어를 중시하는 미니멀리스트를 위해 정밀하게 제작되었습니다.</string>
+    <string name="settings_license">라이선스</string>
+    <string name="settings_privacy_policy">개인정보처리방침</string>
+
+    <!-- About -->
+    <string name="about_title">정보</string>
+</resources>

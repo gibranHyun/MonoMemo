@@ -30,4 +30,6 @@ class NoteRepository(private val dao: NoteDao) {
     suspend fun deleteOlderThan(threshold: Long): Int = dao.deleteOlderThan(threshold)
 
     suspend fun getActiveCount(): Int = dao.getActiveCount()
+
+    suspend fun emptyTrash() = dao.emptyTrash()
 }

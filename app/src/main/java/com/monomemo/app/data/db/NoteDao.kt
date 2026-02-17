@@ -44,4 +44,7 @@ interface NoteDao {
 
     @Query("SELECT COUNT(*) FROM notes WHERE deletedAt IS NULL")
     suspend fun getActiveCount(): Int
+
+    @Query("DELETE FROM notes WHERE deletedAt IS NOT NULL")
+    suspend fun emptyTrash()
 }
