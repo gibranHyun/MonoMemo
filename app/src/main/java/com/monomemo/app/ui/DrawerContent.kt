@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -124,6 +125,7 @@ fun DrawerContent(
                         Text(
                             text = title,
                             style = MaterialTheme.typography.bodyLarge,
+                            fontFamily = FontFamily.Default,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 1,
@@ -133,6 +135,7 @@ fun DrawerContent(
                             Text(
                                 text = preview,
                                 style = MaterialTheme.typography.bodySmall,
+                                fontFamily = FontFamily.Default,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,

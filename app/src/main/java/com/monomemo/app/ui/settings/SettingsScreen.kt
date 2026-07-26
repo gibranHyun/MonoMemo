@@ -176,9 +176,9 @@ fun SettingsScreen(
                     )
                     Text(
                         "A",
-                        style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp,
                     )
                 }
             }

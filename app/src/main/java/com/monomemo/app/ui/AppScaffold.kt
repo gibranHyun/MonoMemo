@@ -191,7 +191,9 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
             ModalNavigationDrawer(
                 drawerState = drawerState,
                 drawerContent = {
-                    ModalDrawerSheet {
+                    ModalDrawerSheet(
+                        drawerContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                    ) {
                         DrawerContent(
                             notes = activeNotes,
                             currentNoteId = currentNoteId,
@@ -255,9 +257,9 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                             onClick = { editorViewModel.undo() },
                                             enabled = canUndo,
                                         ) {
-                                            val undoColor = if (canUndo) MaterialTheme.colorScheme.onSurface
+                                            val undoColor = if (canUndo) AccentOrange
                                                 else MaterialTheme.colorScheme.outline
-                                            Canvas(modifier = Modifier.size(24.dp)) {
+                                            Canvas(modifier = Modifier.size(26.dp)) {
                                                 val w = size.width
                                                 val h = size.height
                                                 val stroke = androidx.compose.ui.graphics.drawscope.Stroke(
@@ -288,9 +290,9 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                             onClick = { editorViewModel.redo() },
                                             enabled = canRedo,
                                         ) {
-                                            val redoColor = if (canRedo) MaterialTheme.colorScheme.onSurface
+                                            val redoColor = if (canRedo) AccentOrange
                                                 else MaterialTheme.colorScheme.outline
-                                            Canvas(modifier = Modifier.size(24.dp)) {
+                                            Canvas(modifier = Modifier.size(26.dp)) {
                                                 val w = size.width
                                                 val h = size.height
                                                 val stroke = androidx.compose.ui.graphics.drawscope.Stroke(

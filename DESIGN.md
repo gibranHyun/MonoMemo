@@ -1,157 +1,88 @@
-# 모노메모 (MonoMemo) DESIGN
+# MonoMemo — 디자인 아이디어 요청
 
-> 목표: “심플한 메모장”처럼 보이지만, Find/Replace UX는 텍스트 에디터 급으로 강력하게.
+## 앱 소개
 
-## 0. 레퍼런스 링크(공식 문서)
-- Drawer (Compose): https://developer.android.com/develop/ui/compose/components/drawer
-- App bars (Compose): https://developer.android.com/develop/ui/compose/components/app-bars
-- Search bar (Compose): https://developer.android.com/develop/ui/compose/components/search-bar
-- 모노메모 목업(현재 UI 방향): https://www.genspark.ai/api/files/s/VLVuWmby?cache_control=3600
+**MonoMemo**는 Android 전용 오프라인 초경량 텍스트 에디터 앱입니다.
 
-## 1. 화면 설계
+- **기술 스택**: Kotlin + Jetpack Compose + Material3 + Room DB
+- **핵심 폰트**: D2Coding (고정폭 모노스페이스, 네이버 제작)
+- **설계 철학**: 기능이 적은 대신, 쓰는 것 자체가 기분 좋은 앱. Apple식 디테일 — 사용자가 의식하지 못하는 사이에 기분이 좋아지는 미세한 경험을 지향합니다.
 
-### 1.1 EditorScreen (홈)
-#### TopAppBar: Normal Mode
-- Navigation icon: ☰ (drawer open)
-- Title: 노트 제목 1줄(TextField or BasicTextField, 단 1줄)
-- Actions: 🔍, ⋮
+## 현재 앱 구성
 
-#### Body
-- “표시 레이어” + “입력 레이어” 2중 구조
-  1) 표시 레이어: Text(AnnotatedString)로 하이라이트 렌더링
-  2) 입력 레이어: BasicTextField (텍스트는 보이되, 스타일/색상 조정으로 표시 레이어와 겹치게)
-- 폰트: D2Coding 기본 적용
-- 줄바꿈(wrap) 설정 적용
+### 화면 5개
+1. **에디터** — 제목(왼쪽 오렌지 4dp 악센트바) + 본문(BasicTextField) + 하단바(TAB 버튼, "N줄 · N자" 카운터)
+2. **서랍(Drawer)** — 노트 검색 + 노트 리스트(최근순) + 하단 휴지통/설정 링크
+3. **검색/바꾸기** — 앱바가 변신하여 찾기/바꾸기 UI로 전환, 대소문자/전체단어 토글, 매치 하이라이트 + 센터링 스크롤
+4. **휴지통** — 소프트 삭제된 노트 리스트, 복원/영구삭제, 30일 자동 삭제
+5. **설정** — 테마(시스템/라이트/다크), 폰트 크기 슬라이더, 줄바꿈/줄번호 토글
 
-#### Bottom(선택)
-- 아주 작은 상태 텍스트: “저장됨” / “저장 중…” 정도만
+### 주요 기능
+- Undo/Redo (디바운스 기반 스냅샷, 최대 50단계)
+- 파일 Import/Export, 공유
+- 자동 저장 (800ms 디바운스)
+- 찾기/바꾸기 (150~250ms 디바운스, soft limit 1000 매치)
 
-### 1.2 EditorScreen: Search Mode (앱바 변신)
-#### SearchTopBar 구성
-- Leading: X (검색 모드 종료)
-- Find 입력: 1줄
-- Prev/Next 버튼
-- 카운터: n/total
-- 옵션 토글:
-  - Aa (case sensitive)
-  - W (whole word)
-- Replace 확장:
-  - Replace 입력칸(접힘/펼침)
-  - Replace One, Replace All
+### 현재 디자인 시스템
+- **Accent 컬러**: 오렌지(#F58220) 메인, 블루(#00A0E9), 라임(#8BC34A), 핑크(#E91E63) 보조
+- **라이트 모드**: 따뜻한 회색(#F2F1EF) 배경 + 흰색 서피스
+- **다크 모드**: 네이비(#1A2433) 배경 + 짙은 블루그레이(#222C3C) 서피스
+- **BrandStripe**: 앱바 최상단에 4색 그라데이션 띠(3dp)
+- **커스텀 Canvas 일러스트**: 연필(빈 에디터), 빈 상자(빈 휴지통), Undo/Redo 아이콘
 
-#### Search Mode UX 규칙
-- findQuery 변경 시:
-  - matches 재계산(디바운스 150~250ms)
-  - currentIndex는 가능한 한 안정적으로 유지
-- Prev/Next 시:
-  - currentIndex 갱신
-  - 현재 매치가 “화면 중앙”으로 오도록 자동 스크롤
-- Replace One:
-  - 현재 매치 1개 치환
-  - matches 재계산
-  - 다음 매치로 이동(가능하면)
-- Replace All:
-  - 적용 전: “총 N건 변경” 안내
-  - 적용 후: Snackbar Undo 제공(이전 텍스트 통째로 복구)
+### 현재 없는 것
+- 애니메이션/트랜지션 (화면 전환, 저장 피드백 등 전무)
+- Haptic feedback
+- 마이크로인터랙션 (버튼, 저장, 노트 전환 시)
+- 온보딩 / 첫 실행 경험
+- 시각적 계층감 (그림자, elevation, 깊이감)
 
-### 1.3 DrawerContent (왼쪽)
-구역 고정(심플/직관):
-1) + 새 노트
-2) 노트 목록(최근 수정순, 20개)
-3) Divider
-4) 휴지통, 설정
+---
 
-### 1.4 TrashScreen
-- 상단: “휴지통”
-- 안내: “30일 후 자동 삭제”
-- 리스트: 제목/삭제일
-- 각 아이템: [복원] 버튼
-- 오버플로우: “전체 비우기”, “영구 삭제” 등 위험 액션은 숨김
+## 요청
 
-### 1.5 SettingsScreen (최소)
-- ThemeMode: System/Light/Dark
-- fontSizeSp: Slider or Stepper
-- wrapEnabled: Switch
+아래 영역들에 대해 **구체적이고 실행 가능한 디자인 아이디어**를 제안해 주세요. "이렇게 하면 좋겠다" 수준이 아니라, **왜 그것이 사용자의 기분을 좋게 만드는지** 심리적 근거와 함께 설명해 주세요.
 
-## 2. 상태 머신(에디터)
-### 2.1 EditorMode
-- Normal
-- Search
+### 1. 감정적 마이크로인터랙션
+- 자동 저장 시 "안전하다"는 느낌의 미세한 피드백
+- 새 노트 생성, 삭제, Undo 등 주요 액션의 시각/촉각 피드백
+- 글쓰기 중 "잘 하고 있다"는 느낌 (글자 수 마일스톤, 부드러운 커서 등)
 
-전이:
-- Normal --(tap 🔍)--> Search
-- Search --(tap X)--> Normal
-- Search 상태에서 Replace/Prev/Next는 Search 유지
+### 2. 화면 전환 & 모션
+- 에디터 ↔ 설정 ↔ 휴지통 전환 트랜지션
+- 서랍 열림/닫힘 모션
+- 검색 모드 진입/퇴장 시 앱바 변신 애니메이션
 
-## 3. 데이터 모델
+### 3. 빈 상태(Empty State) & 온보딩
+- 현재 Canvas 일러스트 + 한 줄 텍스트 → 더 따뜻하고 영감을 주는 방향
+- 첫 실행 시 환영 경험
 
-### 3.1 Room: NoteEntity
-- id: Long (PK)
-- title: String
-- content: String
-- titleManuallyEdited: Boolean
-- createdAt: Long
-- updatedAt: Long
-- deletedAt: Long? (null이면 활성, 값이면 휴지통)
+### 4. 컬러 & 타이포그래피
+- 4색 Accent 체계의 조화 점검 및 개선
+- D2Coding만 쓰는 것의 한계와 대안 (제목에 다른 폰트? 부분적 가변폭?)
+- 라이트/다크 모드의 분위기 차별화
 
-인덱스 권장:
-- updatedAt
-- deletedAt
+### 5. 시각적 계층 & 깊이감
+- elevation, 그림자, blur를 활용한 공간감
+- 중요도에 따른 시각적 위계
 
-### 3.2 DataStore(Preferences)
-- lastOpenedNoteId: Long
-- themeMode: String (system/light/dark)
-- fontSizeSp: Int
-- wrapEnabled: Boolean
+### 6. 하단바 & 상태 표시
+- "TAB | N줄 · N자" 하단바 개선
+- 저장 상태, 편집 시간 등의 우아한 표시
 
-## 4. 도메인 모델(Find/Replace)
-### 4.1 FindOptions
-- caseSensitive: Boolean
-- wholeWord: Boolean
+### 7. 전체 무드 & 감성 키워드
+- 이 앱이 가져야 할 감성적 키워드 3~5개
+- 그 키워드를 구현하기 위한 디자인 방향
 
-### 4.2 Match 표현
-- IntRange(start, endExclusive) 리스트로 관리
+---
 
-### 4.3 하이라이트 색상
-- all match: #FFF4B2
-- current match: #FFE070
+## 제약 조건
+- Jetpack Compose + Material3 + Canvas (네이티브 Android만)
+- 외부 라이브러리 최소화 (Lottie 검토 가능하나 Compose 우선)
+- 앱 용량 경량 유지 (현재 D2Coding 폰트 ~8MB가 최대 에셋)
+- **기능 추가가 아닌 기존 기능의 감성적 품질 향상**이 목표
 
-## 5. 알고리즘 설계
-
-### 5.1 findMatches(text, query, options)
-- query가 비어 있으면 matches=[]
-- caseSensitive false면 비교용으로 lowerCase 매칭
-- wholeWord:
-  - “단어 문자” 기준: letter/digit/'_'
-  - start-1, end 위치가 단어문자가 아니어야 whole word로 인정
-- 매치 수 과다 방지:
-  - soft limit (예: 1000) 넘으면 이후는 생략하고 UI에 “매치가 너무 많음” 안내
-
-### 5.2 buildHighlightedAnnotatedString(text, matches, currentIndex)
-- 기본 스타일 + 매치 구간에 background 색 적용
-- currentIndex 구간은 더 진하게 덮어쓰기
-
-### 5.3 scrollToCurrentMatchCenter(layoutResult, scrollState, matchStart)
-- TextLayoutResult로 matchStart의 bounding box 확보
-- 해당 y 위치가 화면 중앙 근처가 되도록 scrollTo/animateScrollTo
-
-## 6. 저장/디바운스 정책
-- content 변경은 UI 즉시 반영
-- DB 저장은 500~1000ms 디바운스
-- findQuery는 150~250ms 디바운스(성능 보호)
-
-## 7. 에러/엣지 케이스
-- query가 매우 짧고 반복되는 경우 매치 폭발 → soft limit
-- replaceQuery가 빈 문자열인 경우(삭제)도 지원
-- 한글/특수문자에서도 동작(wholeWord는 ASCII 기반으로 시작, 추후 개선 가능)
-- 현재 매치가 사라진 경우 currentIndex 재조정
-
-## 8. UI 체크리스트(완료 기준)
-- 앱 실행 → 마지막 노트 열림
-- 드로어에서 노트 전환/새 노트
-- 🔍로 검색 모드 진입, X로 종료
-- 전체 매치 하이라이트 + 현재 매치 강조
-- Prev/Next로 이동 시 센터링 스크롤
-- Replace One/All + Undo Snackbar
-- 휴지통: 삭제/복원/30일 자동 삭제
-- 설정: 테마/폰트/줄바꿈 적용
+## 원하는 산출물
+- 각 항목별 구체적 아이디어 + 심리적 근거
+- Compose 구현 접근법/API 힌트 (정확한 코드가 아니어도 OK)
+- 우선순위 추천 (적은 노력 → 큰 임팩트 순)

@@ -14,10 +14,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,6 +49,7 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.monomemo.app.MonoMemoApp
 import com.monomemo.app.R
 import com.monomemo.app.ui.theme.D2CodingFamily
@@ -69,6 +75,8 @@ fun EditorScreen(
 
     val app = LocalContext.current.applicationContext as MonoMemoApp
     val lineNumbersEnabled by app.settingsDataStore.lineNumbersEnabled.collectAsState(initial = false)
+    val fontSizeSp by app.settingsDataStore.fontSizeSp.collectAsState(initial = 16)
+    val wrapEnabled by app.settingsDataStore.wrapEnabled.collectAsState(initial = true)
 
     LaunchedEffect(noteId) {
         noteId?.let { viewModel.loadNote(it) }
@@ -107,54 +115,64 @@ fun EditorScreen(
     Column(modifier = modifier.fillMaxSize()) {
         // Editor body
         Box(modifier = Modifier.weight(1f)) {
+            val hScrollState = rememberScrollState()
+            val lineNumWidth = if (lineNumbersEnabled) (lineCount.toString().length * 10 + 16).dp else 0.dp
             // Editor with scrollable content (always visible)
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 12.dp)
-                    .verticalScroll(scrollState),
-            ) {
-                // Line numbers
-                if (lineNumbersEnabled) {
-                    val lineNumWidth = (lineCount.toString().length * 10 + 16).dp
-                    Column(
-                        modifier = Modifier
-                            .width(lineNumWidth)
-                            .padding(top = 0.dp),
-                        horizontalAlignment = Alignment.End,
-                    ) {
-                        for (i in 1..lineCount) {
-                            Text(
-                                text = "$i",
-                                style = TextStyle(
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                                    fontFamily = D2CodingFamily,
-                                    textAlign = TextAlign.End,
-                                ),
-                                modifier = Modifier.padding(end = 8.dp),
-                            )
+            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                val availableWidth = maxWidth
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 12.dp)
+                        .verticalScroll(scrollState)
+                        .then(if (!wrapEnabled) Modifier.horizontalScroll(hScrollState) else Modifier),
+                ) {
+                    // Line numbers
+                    if (lineNumbersEnabled) {
+                        Column(
+                            modifier = Modifier
+                                .width(lineNumWidth)
+                                .padding(top = 0.dp),
+                            horizontalAlignment = Alignment.End,
+                        ) {
+                            for (i in 1..lineCount) {
+                                Text(
+                                    text = "$i",
+                                    style = TextStyle(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        fontSize = fontSizeSp.sp,
+                                        fontFamily = D2CodingFamily,
+                                        textAlign = TextAlign.End,
+                                    ),
+                                    modifier = Modifier.padding(end = 8.dp),
+                                )
+                            }
                         }
                     }
-                }
 
-                // Text editor
-                BasicTextField(
-                    value = content,
-                    onValueChange = { viewModel.onContentChange(it) },
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .padding(horizontal = if (lineNumbersEnabled) 4.dp else 16.dp),
-                    textStyle = TextStyle(
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                        fontFamily = D2CodingFamily,
-                    ),
-                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                    visualTransformation = highlightTransformation,
-                    onTextLayout = { textLayoutResult = it },
-                )
+                    // Text editor
+                    BasicTextField(
+                        value = content,
+                        onValueChange = { viewModel.onContentChange(it) },
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .then(
+                                if (wrapEnabled)
+                                    Modifier.weight(1f)
+                                else
+                                    Modifier.defaultMinSize(minWidth = availableWidth - lineNumWidth)
+                            )
+                            .padding(horizontal = if (lineNumbersEnabled) 4.dp else 16.dp),
+                        textStyle = TextStyle(
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = fontSizeSp.sp,
+                            fontFamily = D2CodingFamily,
+                        ),
+                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                        visualTransformation = highlightTransformation,
+                        onTextLayout = { textLayoutResult = it },
+                    )
+                }
             }
 
             // Empty state overlay (non-interactive, behind cursor)
@@ -178,7 +196,11 @@ fun EditorScreen(
                 .padding(horizontal = 8.dp, vertical = 2.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            TextButton(onClick = { viewModel.insertTab() }) {
+            TextButton(
+                onClick = { viewModel.insertTab() },
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                shape = RoundedCornerShape(6.dp),
+            ) {
                 Text(
                     stringResource(R.string.tab_label),
                     style = MaterialTheme.typography.labelSmall,

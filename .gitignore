@@ -10,3 +10,9 @@
 local.properties
 kim.png
 monomemo.png
+
+# local artifacts
+*.png
+screenshots/
+mockups/
+.claude/worktrees/

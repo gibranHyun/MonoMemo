@@ -39,7 +39,6 @@ import com.monomemo.app.ui.components.EmptyTrashState
 import com.monomemo.app.ui.components.RestoreIcon
 import com.monomemo.app.ui.components.TrashCanIcon
 import com.monomemo.app.ui.theme.AccentOrange
-import com.monomemo.app.ui.theme.AccentPink
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +75,7 @@ fun TrashScreen(
                         TextButton(onClick = onEmptyAll) {
                             Text(
                                 stringResource(R.string.trash_empty_all),
-                                color = AccentPink,
+                                color = MaterialTheme.colorScheme.error,
                                 fontWeight = FontWeight.Bold,
                             )
                         }
