@@ -16,3 +16,8 @@ monomemo.png
 screenshots/
 mockups/
 .claude/worktrees/
+
+# signing (do not commit)
+keystore.properties
+*.keystore
+*.jks
