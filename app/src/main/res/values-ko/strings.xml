@@ -66,6 +66,12 @@
     <string name="trash_weeks">%1$d주</string>
     <string name="trash_hours">%1$d시간</string>
     <string name="trash_just_now">방금</string>
+    <string name="trash_confirm_delete_title">영구 삭제할까요?</string>
+    <string name="trash_confirm_delete_message">이 노트가 영구적으로 삭제되며 복원할 수 없습니다.</string>
+    <string name="trash_confirm_empty_title">휴지통을 비울까요?</string>
+    <string name="trash_confirm_empty_message">휴지통의 모든 노트가 영구적으로 삭제되며 복원할 수 없습니다.</string>
+    <string name="trash_confirm_delete">삭제</string>
+    <string name="trash_confirm_cancel">취소</string>
 
     <!-- Settings -->
     <string name="settings_title">설정</string>

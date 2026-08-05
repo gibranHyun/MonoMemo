@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -61,6 +62,9 @@ import com.monomemo.app.ui.theme.AccentOrange
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+private const val PRIVACY_POLICY_URL = "https://gibranhyun.github.io/MonoMemo/privacy-policy.html"
+private const val LICENSE_URL = "https://scripts.sil.org/OFL"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
@@ -68,6 +72,7 @@ fun SettingsScreen(
     onBack: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
+    val uriHandler = LocalUriHandler.current
     val themeMode by settingsDataStore.themeMode.collectAsState(initial = "system")
     val fontSizeSp by settingsDataStore.fontSizeSp.collectAsState(initial = 16)
     val wrapEnabled by settingsDataStore.wrapEnabled.collectAsState(initial = true)
@@ -297,7 +302,7 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    stringResource(R.string.settings_version, "1.0.4"),
+                    stringResource(R.string.settings_version, com.monomemo.app.BuildConfig.VERSION_NAME),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     letterSpacing = 1.sp,
@@ -323,6 +328,7 @@ fun SettingsScreen(
                         stringResource(R.string.settings_license),
                         style = MaterialTheme.typography.bodySmall,
                         color = AccentOrange,
+                        modifier = Modifier.clickable { uriHandler.openUri(LICENSE_URL) },
                     )
                     Text(
                         "  \u00B7  ",
@@ -333,6 +339,7 @@ fun SettingsScreen(
                         stringResource(R.string.settings_privacy_policy),
                         style = MaterialTheme.typography.bodySmall,
                         color = AccentOrange,
+                        modifier = Modifier.clickable { uriHandler.openUri(PRIVACY_POLICY_URL) },
                     )
                 }
             }

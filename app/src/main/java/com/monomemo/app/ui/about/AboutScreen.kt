@@ -49,7 +49,7 @@ fun AboutScreen(
                 .verticalScroll(rememberScrollState()),
         ) {
             Text("MonoMemo", style = MaterialTheme.typography.headlineMedium)
-            Text("v1.0.0", style = MaterialTheme.typography.bodyMedium)
+            Text("v${com.monomemo.app.BuildConfig.VERSION_NAME}", style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 "오프라인 초경량 노트 에디터",

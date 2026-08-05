@@ -1,5 +1,6 @@
 package com.monomemo.app.ui.editor
 
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -180,7 +181,8 @@ class EditorViewModel(
         val range = matches[idx]
         val text = _content.value.text
         val newText = text.substring(0, range.first) + _replaceQuery.value + text.substring(range.last + 1)
-        _content.value = TextFieldValue(newText)
+        val cursor = (range.first + _replaceQuery.value.length).coerceAtMost(newText.length)
+        _content.value = TextFieldValue(newText, TextRange(cursor))
         if (!_titleManuallyEdited.value) updateAutoTitle(newText)
         scheduleSave()
         performFind()
@@ -203,7 +205,8 @@ class EditorViewModel(
         }
 
         val newText = sb.toString()
-        _content.value = TextFieldValue(newText)
+        val cursor = _content.value.selection.start.coerceAtMost(newText.length)
+        _content.value = TextFieldValue(newText, TextRange(cursor))
         if (!_titleManuallyEdited.value) updateAutoTitle(newText)
         scheduleSave()
         performFind()
@@ -211,7 +214,8 @@ class EditorViewModel(
 
     fun undoReplaceAll() {
         val oldText = _undoContent.value ?: return
-        _content.value = TextFieldValue(oldText)
+        val cursor = _content.value.selection.start.coerceAtMost(oldText.length)
+        _content.value = TextFieldValue(oldText, TextRange(cursor))
         if (!_titleManuallyEdited.value) updateAutoTitle(oldText)
         _undoContent.value = null
         _replaceAllCount.value = 0
@@ -251,7 +255,8 @@ class EditorViewModel(
         val prev = undoStack.removeLast()
         redoStack.addLast(lastSnapshotText)
         lastSnapshotText = prev
-        _content.value = TextFieldValue(prev)
+        val cursor = _content.value.selection.start.coerceAtMost(prev.length)
+        _content.value = TextFieldValue(prev, TextRange(cursor))
         if (!_titleManuallyEdited.value) updateAutoTitle(prev)
         _canUndo.value = undoStack.isNotEmpty()
         _canRedo.value = redoStack.isNotEmpty()
@@ -265,7 +270,8 @@ class EditorViewModel(
         undoStack.addLast(lastSnapshotText)
         val next = redoStack.removeLast()
         lastSnapshotText = next
-        _content.value = TextFieldValue(next)
+        val cursor = _content.value.selection.start.coerceAtMost(next.length)
+        _content.value = TextFieldValue(next, TextRange(cursor))
         if (!_titleManuallyEdited.value) updateAutoTitle(next)
         _canUndo.value = undoStack.isNotEmpty()
         _canRedo.value = redoStack.isNotEmpty()
