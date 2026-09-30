@@ -41,6 +41,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -50,6 +51,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import com.monomemo.app.R
 import com.monomemo.app.ui.components.BrandStripe
@@ -57,6 +59,8 @@ import com.monomemo.app.ui.theme.AccentBlue
 import com.monomemo.app.ui.theme.AccentLime
 import com.monomemo.app.ui.theme.AccentOrange
 import com.monomemo.app.ui.theme.AccentPink
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.monomemo.app.MonoMemoApp
 import com.monomemo.app.ui.about.AboutScreen
@@ -98,6 +102,21 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
     val editorViewModel: EditorViewModel = viewModel(
         factory = EditorViewModel.Factory(app.noteRepository, newMemoTitle),
     )
+
+    // EditorViewModel.onCleared()의 flushSave()는 viewModelScope가 이미 취소된 뒤 호출되어
+    // 실제로는 저장되지 않는다. 앱이 백그라운드로 전환되는 시점(ON_STOP)에 별도로 flush해
+    // 디바운스 구간(최대 800ms)의 편집 내용이 프로세스 종료 시 유실되지 않게 한다.
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner, editorViewModel) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_STOP) {
+                editorViewModel.flushSave()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
     val currentNoteId by appViewModel.currentNoteId.collectAsState()
     val activeNotes by appViewModel.activeNotes.collectAsState()
     val currentScreen by appViewModel.currentScreen.collectAsState()

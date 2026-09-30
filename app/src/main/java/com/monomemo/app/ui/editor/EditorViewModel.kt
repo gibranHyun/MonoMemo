@@ -338,7 +338,8 @@ class EditorViewModel(
         }
     }
 
-    private fun flushSave() {
+    // AppScaffold가 ON_STOP 시점에 호출해 백그라운드 전환 직전 편집 내용을 즉시 저장한다.
+    internal fun flushSave() {
         saveJob?.cancel()
         saveJob = null
         val note = currentNote ?: return
