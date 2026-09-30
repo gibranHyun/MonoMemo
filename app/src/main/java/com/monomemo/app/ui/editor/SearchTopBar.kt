@@ -27,6 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.monomemo.app.R
@@ -111,8 +114,17 @@ fun SearchTopBar(
         ) {
             val activeColor = MaterialTheme.colorScheme.onSurface
             val inactiveColor = MaterialTheme.colorScheme.onSurfaceVariant
+            val onDescription = stringResource(R.string.state_on)
+            val offDescription = stringResource(R.string.state_off)
 
-            TextButton(onClick = onToggleCaseSensitive) {
+            val caseSensitiveDescription = stringResource(R.string.find_match_case)
+            TextButton(
+                onClick = onToggleCaseSensitive,
+                modifier = Modifier.semantics {
+                    contentDescription = caseSensitiveDescription
+                    stateDescription = if (caseSensitive) onDescription else offDescription
+                },
+            ) {
                 Text(
                     "Aa",
                     style = MaterialTheme.typography.bodySmall,
@@ -120,7 +132,14 @@ fun SearchTopBar(
                     color = if (caseSensitive) activeColor else inactiveColor,
                 )
             }
-            TextButton(onClick = onToggleWholeWord) {
+            val wholeWordDescription = stringResource(R.string.find_whole_word)
+            TextButton(
+                onClick = onToggleWholeWord,
+                modifier = Modifier.semantics {
+                    contentDescription = wholeWordDescription
+                    stateDescription = if (wholeWord) onDescription else offDescription
+                },
+            ) {
                 Text(
                     "W",
                     style = MaterialTheme.typography.bodySmall,

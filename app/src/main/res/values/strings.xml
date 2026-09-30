@@ -47,6 +47,10 @@
     <string name="replace_one">One</string>
     <string name="replace_all">All</string>
     <string name="match_limit_warning">1000+ matches. Narrow your search.</string>
+    <string name="find_match_case">Match case</string>
+    <string name="find_whole_word">Whole word</string>
+    <string name="state_on">On</string>
+    <string name="state_off">Off</string>
 
     <!-- Drawer -->
     <string name="drawer_new_note">New Note</string>

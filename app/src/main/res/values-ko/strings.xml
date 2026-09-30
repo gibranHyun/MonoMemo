@@ -44,6 +44,10 @@
     <string name="replace_one">하나</string>
     <string name="replace_all">모두</string>
     <string name="match_limit_warning">1000+ 매치. 검색어를 좁혀주세요.</string>
+    <string name="find_match_case">대소문자 구분</string>
+    <string name="find_whole_word">단어 단위</string>
+    <string name="state_on">켜짐</string>
+    <string name="state_off">꺼짐</string>
 
     <!-- Drawer -->
     <string name="drawer_new_note">새 노트</string>
