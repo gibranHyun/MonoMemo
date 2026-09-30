@@ -133,26 +133,23 @@ fun EditorScreen(
                         .then(if (!wrapEnabled) Modifier.horizontalScroll(hScrollState) else Modifier),
                 ) {
                     // Line numbers
+                    // 줄마다 별도 Text 컴포저블을 만들면 로그/코드를 붙여넣은 노트(수천 줄)에서
+                    // 컴포지션·레이아웃 비용이 줄 수에 비례해 커진다. 같은 시각 결과를
+                    // 줄바꿈으로 이어붙인 Text 하나로 렌더링해 컴포저블 수를 O(1)로 유지한다.
                     if (lineNumbersEnabled) {
-                        Column(
+                        val lineNumbers = remember(lineCount) { (1..lineCount).joinToString("\n") }
+                        Text(
+                            text = lineNumbers,
+                            style = TextStyle(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = fontSizeSp.sp,
+                                fontFamily = D2CodingFamily,
+                                textAlign = TextAlign.End,
+                            ),
                             modifier = Modifier
                                 .width(lineNumWidth)
-                                .padding(top = 0.dp),
-                            horizontalAlignment = Alignment.End,
-                        ) {
-                            for (i in 1..lineCount) {
-                                Text(
-                                    text = "$i",
-                                    style = TextStyle(
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        fontSize = fontSizeSp.sp,
-                                        fontFamily = D2CodingFamily,
-                                        textAlign = TextAlign.End,
-                                    ),
-                                    modifier = Modifier.padding(end = 8.dp),
-                                )
-                            }
-                        }
+                                .padding(end = 8.dp),
+                        )
                     }
 
                     // Text editor
