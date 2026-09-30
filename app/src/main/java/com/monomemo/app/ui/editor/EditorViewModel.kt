@@ -179,6 +179,13 @@ class EditorViewModel(
 
         val range = matches[idx]
         val text = _content.value.text
+        // matches는 최대 FIND_DEBOUNCE_MS 만큼 지연되어 재계산되므로, 편집 직후 바로
+        // 치환을 누르면 range가 현재 text 길이를 벗어난 stale 값일 수 있다. 그 경우
+        // 크래시 대신 최신 상태로 다시 찾기만 수행한다.
+        if (range.first < 0 || range.last >= text.length) {
+            performFind()
+            return
+        }
         val newText = text.substring(0, range.first) + _replaceQuery.value + text.substring(range.last + 1)
         _content.value = TextFieldValue(newText)
         if (!_titleManuallyEdited.value) updateAutoTitle(newText)
@@ -191,6 +198,12 @@ class EditorViewModel(
         if (matches.isEmpty()) return
 
         val oldText = _content.value.text
+        // replaceOne()과 동일한 이유로, stale한 match 범위가 현재 텍스트를 벗어나면
+        // 치환을 건너뛰고 다시 찾기만 수행한다.
+        if (matches.any { it.first < 0 || it.last >= oldText.length }) {
+            performFind()
+            return
+        }
         _undoContent.value = oldText
         _replaceAllCount.value = matches.size
 

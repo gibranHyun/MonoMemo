@@ -85,8 +85,13 @@ fun EditorScreen(
     LaunchedEffect(currentMatchIndex, findResult.matches) {
         if (currentMatchIndex >= 0 && currentMatchIndex < findResult.matches.size) {
             val layout = textLayoutResult ?: return@LaunchedEffect
+            val layoutTextLength = layout.layoutInput.text.length
+            // findResult.matches는 디바운스 후 재계산되므로, 텍스트가 그 사이 비워지거나
+            // 짧아지면 matchRange가 현재 레이아웃 길이를 벗어난 stale 값일 수 있다.
+            if (layoutTextLength == 0) return@LaunchedEffect
             val matchRange = findResult.matches[currentMatchIndex]
-            val rect = layout.getBoundingBox(matchRange.first.coerceAtMost(layout.layoutInput.text.length - 1))
+            val safeIndex = matchRange.first.coerceIn(0, layoutTextLength - 1)
+            val rect = layout.getBoundingBox(safeIndex)
             val targetY = (rect.top - scrollState.viewportSize / 2).toInt().coerceAtLeast(0)
             scrollState.animateScrollTo(targetY)
         }
