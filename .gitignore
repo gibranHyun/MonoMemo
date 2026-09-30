@@ -13,9 +13,12 @@ monomemo.png
 
 # local artifacts
 *.png
-screenshots/
 mockups/
 .claude/worktrees/
+
+# store listing screenshots are tracked on purpose
+!/screenshots/
+!/screenshots/*.png
 
 # signing (do not commit)
 keystore.properties
