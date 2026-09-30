@@ -30,6 +30,7 @@
     <!-- Snackbar messages -->
     <string name="changes_made">%1$d건 변경됨</string>
     <string name="undo_action">되돌리기</string>
+    <string name="redo_action">다시 실행</string>
     <string name="moved_to_trash">휴지통으로 이동되었습니다</string>
 
     <!-- Search -->

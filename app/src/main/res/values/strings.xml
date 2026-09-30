@@ -33,6 +33,7 @@
     <!-- Snackbar messages -->
     <string name="changes_made">%1$d replaced</string>
     <string name="undo_action">Undo</string>
+    <string name="redo_action">Redo</string>
     <string name="moved_to_trash">Moved to trash</string>
 
     <!-- Search -->

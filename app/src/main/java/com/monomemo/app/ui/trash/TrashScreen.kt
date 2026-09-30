@@ -27,6 +27,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -152,6 +154,8 @@ private fun TrashNoteItem(
     onDelete: () -> Unit,
 ) {
     val relativeTime = note.deletedAt?.let { formatRelativeTime(it) } ?: ""
+    val restoreDescription = stringResource(R.string.trash_restore)
+    val deleteDescription = stringResource(R.string.trash_delete)
 
     Row(
         modifier = Modifier
@@ -174,10 +178,20 @@ private fun TrashNoteItem(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        IconButton(onClick = onRestore) {
+        IconButton(
+            onClick = onRestore,
+            modifier = Modifier.semantics {
+                contentDescription = restoreDescription
+            },
+        ) {
             RestoreIcon(color = AccentOrange)
         }
-        IconButton(onClick = onDelete) {
+        IconButton(
+            onClick = onDelete,
+            modifier = Modifier.semantics {
+                contentDescription = deleteDescription
+            },
+        ) {
             TrashCanIcon()
         }
     }

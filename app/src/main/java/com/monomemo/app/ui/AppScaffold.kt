@@ -52,6 +52,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.monomemo.app.R
 import com.monomemo.app.ui.components.BrandStripe
@@ -272,9 +274,13 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                         }
                                     },
                                     actions = {
+                                        val undoDescription = stringResource(R.string.undo_action)
                                         IconButton(
                                             onClick = { editorViewModel.undo() },
                                             enabled = canUndo,
+                                            modifier = Modifier.semantics {
+                                                contentDescription = undoDescription
+                                            },
                                         ) {
                                             val undoColor = if (canUndo) AccentOrange
                                                 else MaterialTheme.colorScheme.outline
@@ -305,9 +311,13 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                                 drawPath(path, color = undoColor)
                                             }
                                         }
+                                        val redoDescription = stringResource(R.string.redo_action)
                                         IconButton(
                                             onClick = { editorViewModel.redo() },
                                             enabled = canRedo,
+                                            modifier = Modifier.semantics {
+                                                contentDescription = redoDescription
+                                            },
                                         ) {
                                             val redoColor = if (canRedo) AccentOrange
                                                 else MaterialTheme.colorScheme.outline
