@@ -9,11 +9,13 @@ import com.monomemo.app.data.db.NoteEntity
 import com.monomemo.app.domain.find.FindEngine
 import com.monomemo.app.domain.find.FindOptions
 import com.monomemo.app.domain.find.FindResult
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 enum class EditorMode { Normal, Search }
 
@@ -183,14 +185,14 @@ class EditorViewModel(
         // 치환을 누르면 range가 현재 text 길이를 벗어난 stale 값일 수 있다. 그 경우
         // 크래시 대신 최신 상태로 다시 찾기만 수행한다.
         if (range.first < 0 || range.last >= text.length) {
-            performFind()
+            viewModelScope.launch { performFind() }
             return
         }
         val newText = text.substring(0, range.first) + _replaceQuery.value + text.substring(range.last + 1)
         _content.value = TextFieldValue(newText)
         if (!_titleManuallyEdited.value) updateAutoTitle(newText)
         scheduleSave()
-        performFind()
+        viewModelScope.launch { performFind() }
     }
 
     fun replaceAll() {
@@ -201,7 +203,7 @@ class EditorViewModel(
         // replaceOne()과 동일한 이유로, stale한 match 범위가 현재 텍스트를 벗어나면
         // 치환을 건너뛰고 다시 찾기만 수행한다.
         if (matches.any { it.first < 0 || it.last >= oldText.length }) {
-            performFind()
+            viewModelScope.launch { performFind() }
             return
         }
         _undoContent.value = oldText
@@ -219,7 +221,7 @@ class EditorViewModel(
         _content.value = TextFieldValue(newText)
         if (!_titleManuallyEdited.value) updateAutoTitle(newText)
         scheduleSave()
-        performFind()
+        viewModelScope.launch { performFind() }
     }
 
     fun undoReplaceAll() {
@@ -229,7 +231,7 @@ class EditorViewModel(
         _undoContent.value = null
         _replaceAllCount.value = 0
         scheduleSave()
-        performFind()
+        viewModelScope.launch { performFind() }
     }
 
     fun dismissUndo() {
@@ -269,7 +271,7 @@ class EditorViewModel(
         _canUndo.value = undoStack.isNotEmpty()
         _canRedo.value = redoStack.isNotEmpty()
         scheduleSave()
-        if (_editorMode.value == EditorMode.Search) performFind()
+        if (_editorMode.value == EditorMode.Search) viewModelScope.launch { performFind() }
     }
 
     fun redo() {
@@ -283,7 +285,7 @@ class EditorViewModel(
         _canUndo.value = undoStack.isNotEmpty()
         _canRedo.value = redoStack.isNotEmpty()
         scheduleSave()
-        if (_editorMode.value == EditorMode.Search) performFind()
+        if (_editorMode.value == EditorMode.Search) viewModelScope.launch { performFind() }
     }
 
     // Tab insertion
@@ -308,12 +310,16 @@ class EditorViewModel(
         }
     }
 
-    private fun performFind() {
-        val result = FindEngine.findMatches(
-            text = _content.value.text,
-            query = _findQuery.value,
-            options = _findOptions.value,
-        )
+    // FindEngine.findMatches는 문서 전체를 훑는 연산이라, 긴 노트에서 메인 스레드를
+    // 막지 않도록 Dispatchers.Default에서 실행한다.
+    private suspend fun performFind() {
+        val result = withContext(Dispatchers.Default) {
+            FindEngine.findMatches(
+                text = _content.value.text,
+                query = _findQuery.value,
+                options = _findOptions.value,
+            )
+        }
         _findResult.value = result
         if (result.matches.isEmpty()) {
             _currentMatchIndex.value = -1
