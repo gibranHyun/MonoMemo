@@ -15,7 +15,27 @@
       "Bash(where:*)",
       "Bash(git init:*)",
       "Bash(git add:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: MonoMemo offline note editor\n\nOffline-first lightweight note editor for Android built with\nKotlin, Jetpack Compose, Material3, Room, and DataStore.\n\nFeatures: editor with undo/redo, find & replace, file import/export,\nshare, drawer navigation, trash with 30-day auto-delete, settings\n\\(theme/font size/wrap/line numbers\\), D2Coding monospace font,\nIMAGINATION-inspired color palette, custom app icon.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(adb shell am start:*)",
+      "Bash(adb exec-out:*)",
+      "Bash(adb shell input keyevent:*)",
+      "Bash(adb shell input:*)",
+      "Bash(adb shell uiautomator:*)",
+      "Bash(adb shell:*)",
+      "Bash(tr:*)",
+      "Bash(adb pull:*)",
+      "Bash(adb.exe pull:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(.\\\\gradlew.bat assembleDebug:*)",
+      "Bash(./gradlew.bat assembleDebug:*)",
+      "Bash(adb.exe install:*)",
+      "Bash(adb.exe shell:*)",
+      "Bash(adb.exe logcat:*)",
+      "Bash(adb:*)",
+      "Bash(echo:*)",
+      "Read(//e/e/workspace/**)"
     ]
   }
 }

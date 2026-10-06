@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,9 +39,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
@@ -77,6 +78,19 @@ fun EditorScreen(
     val lineNumbersEnabled by app.settingsDataStore.lineNumbersEnabled.collectAsState(initial = false)
     val fontSizeSp by app.settingsDataStore.fontSizeSp.collectAsState(initial = 16)
     val wrapEnabled by app.settingsDataStore.wrapEnabled.collectAsState(initial = true)
+
+    // 본문·줄번호 공통: D2Coding 기본 행간이 넓어 세로로 늘어져 보이므로 폰트 상하 여백(includeFontPadding)을
+    // 제거하고 줄 간격을 1.1배로 압축. Trim.None + 중앙정렬로 각 줄이 동일 높이를 차지해 줄번호와 정확히 정렬됨.
+    val editorLineHeight = (fontSizeSp * 1.05f).sp
+    // 자간 축소: D2Coding 고정폭 셀이 넓어 가로로 벌어져 보이므로 글자 폭의 5%만큼 좁혀 세로 강조를 완화
+    val editorLetterSpacing = (fontSizeSp * -0.05f).sp
+    val editorPlatformStyle = remember { PlatformTextStyle(includeFontPadding = false) }
+    val editorLineHeightStyle = remember {
+        LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None,
+        )
+    }
 
     LaunchedEffect(noteId) {
         noteId?.let { viewModel.loadNote(it) }
@@ -125,6 +139,7 @@ fun EditorScreen(
             // Editor with scrollable content (always visible)
             BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                 val availableWidth = maxWidth
+                val availableHeight = maxHeight
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
@@ -145,6 +160,9 @@ fun EditorScreen(
                                 fontSize = fontSizeSp.sp,
                                 fontFamily = D2CodingFamily,
                                 textAlign = TextAlign.End,
+                                lineHeight = editorLineHeight,
+                                platformStyle = editorPlatformStyle,
+                                lineHeightStyle = editorLineHeightStyle,
                             ),
                             modifier = Modifier
                                 .width(lineNumWidth)
@@ -157,7 +175,7 @@ fun EditorScreen(
                         value = content,
                         onValueChange = { viewModel.onContentChange(it) },
                         modifier = Modifier
-                            .fillMaxHeight()
+                            .defaultMinSize(minHeight = availableHeight)
                             .then(
                                 if (wrapEnabled)
                                     Modifier.weight(1f)
@@ -169,6 +187,10 @@ fun EditorScreen(
                             color = MaterialTheme.colorScheme.onSurface,
                             fontSize = fontSizeSp.sp,
                             fontFamily = D2CodingFamily,
+                            letterSpacing = editorLetterSpacing,
+                            lineHeight = editorLineHeight,
+                            platformStyle = editorPlatformStyle,
+                            lineHeightStyle = editorLineHeightStyle,
                         ),
                         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                         visualTransformation = highlightTransformation,
