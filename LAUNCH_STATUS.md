@@ -1,17 +1,22 @@
 # MonoMemo 출시 진행 상황
 
-> 최종 갱신: 2026-10-07
+> 최종 갱신: 2026-10-08 (집 PC, `E:\workspace\MonoMemo`)
 > 목적: Google Play 비공개 테스트 → 프로덕션 출시 진행 상황 기록 (다른 컴퓨터/다음 세션 이어가기용)
-> 이 문서는 이 세션(회사 PC, `D:\workspace_gibran\MonoMemo`)에서 확인·작업한 내용만 담았습니다.
 
 ---
 
-## 0. 지금 당장 막혀 있는 것 — 서명 키 파일
+## 0. 2026-10-08 집 PC에서 처리한 것 (회사 PC에서 이어받을 때 참고)
 
-- `keystore.properties`는 이 컴퓨터에 있음 (storeFile, storePassword, keyAlias, keyPassword 4줄, gitignore됨, 커밋 안 함).
-- **`monomemo-upload.keystore` 파일 자체가 이 컴퓨터에 없음.** Downloads/Desktop/Documents/프로젝트 폴더/디스크 전체 검색했지만 못 찾음.
-- 이 파일이 없으면 `bundleRelease`(서명된 AAB)를 만들 수 없음. 디버그 빌드/에뮬레이터 실행은 서명과 무관하게 계속 가능.
-- **집 PC에서 할 일**: `monomemo-upload.keystore` 파일을 찾아서 `D:\workspace_gibran\MonoMemo\`(또는 keystore.properties의 storeFile 경로)에 복사. 파일 내용·비밀번호는 채팅에 붙여넣지 말고, 비밀번호 관리자 첨부파일/암호 걸린 zip+개인 클라우드/USB 중 하나로 옮길 것.
+1. **`monomemo-upload.keystore` 찾음** — 회사 PC에는 없었지만 **집 PC 프로젝트 루트(`E:\workspace\MonoMemo\monomemo-upload.keystore`)에 계속 있었음**. `keystore.properties`의 경로·비밀번호와 일치 확인함.
+   - ⚠️ **회사 PC에는 아직 이 파일이 없음.** 서명 빌드를 회사에서도 하려면 이 keystore 파일을 비밀번호 관리자 첨부파일/암호 zip+개인 클라우드/USB 중 하나로 직접 옮길 것 (git에는 절대 올리지 않음, `.gitignore`됨).
+2. **서명된 AAB 빌드 완료** — `./gradlew :app:bundleRelease` 성공, `app/build/outputs/bundle/release/app-release.aab` (versionCode 5, 1.0.4). 경고 2건(proguard 매핑/네이티브 심볼 파일 미업로드)은 출시를 막지 않는 권장사항이라 무시하고 진행함.
+3. **Play Console 프로덕션 액세스 요건 전부 충족 확인** — 12명 이상 옵트인 + 14일 이상 비공개 테스트, 체크리스트 3개 전부 녹색.
+4. **버전 5(1.0.4)를 비공개 테스트(Alpha)에 업로드·제출 완료 → 검토 통과 → 게시됨** (Play Console 알림 "앱 업데이트가 게시되었습니다", 10월 8일자로 확인). 릴리스 노트는 섹션 1의 "릴리스 노트 초안"을 그대로 사용함.
+
+## 1. 지금 당장 막혀 있는 것 — 서명 키 파일 (회사 PC 기준, 2026-10-07 작성분, 참고용)
+
+- `keystore.properties`는 회사 컴퓨터에 있음 (storeFile, storePassword, keyAlias, keyPassword 4줄, gitignore됨, 커밋 안 함).
+- `monomemo-upload.keystore` 파일 자체는 **집 PC에 있었음** (위 0번 항목 참고). 회사 PC로 옮기면 양쪽에서 서명 빌드 가능.
 - 참고: Play Console 설정 > 앱 무결성 > 앱 서명에서 "Google Play 앱 서명"으로 등록되어 있다면, 이 업로드 키를 완전히 분실해도 업로드 키 재설정으로 복구 가능 (아직 미확인).
 
 ## 1. 빌드/버전 현황 (이 컴퓨터 기준, 2026-10-07)
@@ -80,14 +85,16 @@ cfdf809 찾기 연산을 메인 스레드 밖에서 실행
 - 휴대전화 스크린샷 5장 전부 1080×2160(2:1)으로 재촬영·교체 완료, Play Console에 업로드·반영 확인함 (`screenshots/`, `tools/seed-screenshots.sql`, `tools/README.md` 참고)
 - 개인 메모/AI 프롬프트 등 부적절한 데모 콘텐츠는 모두 정책 안전한 샘플로 교체함
 
-## 3. 다음 세션(집 PC)에서 할 일
+## 3. 다음 세션(회사 PC)에서 할 일
 
-1. [ ] **`monomemo-upload.keystore` 파일 찾기** — 이게 최우선. 찾으면 회사 PC로도 옮겨서 양쪽에서 서명 빌드 가능하게 할 것
-2. [ ] Play Console 접속해서 프로덕션 액세스 신청 가능 여부(14일 요건 충족했는지) 확인
+1. [x] `monomemo-upload.keystore` 파일 찾기 — 집 PC에서 찾음 (0번 항목 참고)
+2. [x] Play Console 프로덕션 액세스 요건(14일) 충족 확인
 3. [ ] 테스터 피드백 메일 응답 확인
-4. [ ] 요건 충족 시 → 이번 세션에서 고친 안정성 개선 6건을 반영한 새 버전(versionCode 5, 1.0.4)을 비공개 테스트에 업로드 → 안정화 확인 → 프로덕션 재신청
-   - 프로덕션 신청서 "피드백 수집 및 앱 개선" 문항에 위 릴리스 노트 초안 활용 가능
-5. [ ] 서명 키 확보 후 `./gradlew :app:bundleRelease`로 AAB 생성, `app/build/outputs/bundle/release/app-release.aab` 확인 후 Play Console에 업로드
+4. [x] 새 버전(versionCode 5, 1.0.4)을 비공개 테스트에 업로드 → 검토 통과 → 게시됨 (2026-10-08)
+5. [x] 서명 키로 AAB 생성 완료 (집 PC)
+6. [ ] **`monomemo-upload.keystore`를 회사 PC로도 옮기기** (안전한 채널로) — 회사에서도 서명 빌드 하려면 필요
+7. [ ] 1.0.4 설치해서 안정성 개선 6건이 실제로 잘 동작하는지 며칠 지켜보기
+8. [ ] 안정화 확인되면 → **Play Console에서 프로덕션 액세스 재신청** (1차는 "추가 테스트 필요"로 반려됐었음 — 이번엔 요건 충족 + 안정성 개선판이라 통과 가능성 높음)
 
 ## 4. 참고 — 개발 환경 팁
 
