@@ -1,79 +1,97 @@
 # MonoMemo 출시 진행 상황
 
-> 최종 갱신: 2026-08-05
-> 목적: Google Play 비공개 테스트 → 프로덕션 출시 진행 상황 기록 (다음 세션 이어가기용)
+> 최종 갱신: 2026-10-07
+> 목적: Google Play 비공개 테스트 → 프로덕션 출시 진행 상황 기록 (다른 컴퓨터/다음 세션 이어가기용)
+> 이 문서는 이 세션(회사 PC, `D:\workspace_gibran\MonoMemo`)에서 확인·작업한 내용만 담았습니다.
 
 ---
 
-## 1. 빌드/버전 현황
+## 0. 지금 당장 막혀 있는 것 — 서명 키 파일
 
-- **현재 버전**: v1.0.2 (versionCode 3)
-- **targetSdk / compileSdk**: 36 (Android 16) — 2026-08-31 API 수준 마감 대응 완료
+- `keystore.properties`는 이 컴퓨터에 있음 (storeFile, storePassword, keyAlias, keyPassword 4줄, gitignore됨, 커밋 안 함).
+- **`monomemo-upload.keystore` 파일 자체가 이 컴퓨터에 없음.** Downloads/Desktop/Documents/프로젝트 폴더/디스크 전체 검색했지만 못 찾음.
+- 이 파일이 없으면 `bundleRelease`(서명된 AAB)를 만들 수 없음. 디버그 빌드/에뮬레이터 실행은 서명과 무관하게 계속 가능.
+- **집 PC에서 할 일**: `monomemo-upload.keystore` 파일을 찾아서 `D:\workspace_gibran\MonoMemo\`(또는 keystore.properties의 storeFile 경로)에 복사. 파일 내용·비밀번호는 채팅에 붙여넣지 말고, 비밀번호 관리자 첨부파일/암호 걸린 zip+개인 클라우드/USB 중 하나로 옮길 것.
+- 참고: Play Console 설정 > 앱 무결성 > 앱 서명에서 "Google Play 앱 서명"으로 등록되어 있다면, 이 업로드 키를 완전히 분실해도 업로드 키 재설정으로 복구 가능 (아직 미확인).
+
+## 1. 빌드/버전 현황 (이 컴퓨터 기준, 2026-10-07)
+
+- **repo 버전**: versionCode 5, versionName "1.0.4" (`app/build.gradle.kts`)
+- **targetSdk / compileSdk**: 36
 - **패키지**: com.monomemo.app
-- **서명**: `monomemo-upload.keystore` + `keystore.properties` (둘 다 gitignore, 절대 커밋 금지)
-- **배포용 AAB**: `app/build/outputs/bundle/release/app-release.aab`
+- **Play Console에 실제 배포된 마지막 버전**: versionCode 3 (1.0.2), 사용자가 확인한 값 (2026-09-30 기준)
+  - 이후 9월 23일에 한 번 더 업데이트를 올렸다고 들었으나, 그 버전의 실제 versionCode는 Play Console에서 재확인 필요
+- **AAB는 아직 못 만듦** (0번 항목 참고)
 
-### 이번 세션에서 고친 것 (v1.0.2)
-- 🐛 에디터 키보드 안 뜨던 버그 (`fillMaxHeight` → `defaultMinSize(minHeight=availableHeight)`)
-- 🔧 버전 표기 3곳 불일치 → `BuildConfig.VERSION_NAME`으로 일원화
-- 🔧 설정 화면 License/개인정보처리방침 링크 죽어있던 것 → `LocalUriHandler`로 실제 동작
-- 🔧 휴지통 영구삭제·전체비우기 확인 다이얼로그 없던 것 → `AlertDialog` 추가
-- 🔧 치환/실행취소 후 커서가 맨 앞으로 튀던 것 → `TextRange` 명시로 커서 위치 보존
-- 🎨 D2Coding 본문 글꼴이 세로로 길어 보이는 문제 → 자간(letterSpacing) -5% 축소로 완화 (줄간격은 이미 한계라 큰 효과 없었음)
-- 🖼️ 스토어 피처 그래픽에 태그라인 텍스트 있던 것 → 아이콘+이름만 있는 클린 버전으로 교체
+### git 상태 (이 컴퓨터, origin/main과 동기화됨)
+```
+a2b1680 Merge remote-tracking branch 'origin/main'
+59bf800 버전 4 (1.0.3)로 업데이트
+63f58dd 검색 옵션 토글에 접근성 설명 및 on/off 상태 노출
+b507f7e 아이콘 전용 버튼에 접근성 설명 추가
+9f31f86 줄 번호 렌더링을 Text 1개로 합쳐 컴포저블 폭증 방지
+cfdf809 찾기 연산을 메인 스레드 밖에서 실행
+07301bb 백그라운드 전환 시 편집 내용 즉시 저장
+48ce259 찾기/바꾸기: 오래된 매치 범위로 인한 크래시 방지
+5eac5d9 스토어 스크린샷 교체 및 재생성 스크립트 추가
+8b8a011 v1.0.2: 에디터 키보드 버그 수정 및 UX 개선, targetSdk 36 대응  (집 PC에서 작업한 커밋)
+73997c3 출시 준비: release 서명 설정, 개인정보처리방침, 스토어 그래픽 에셋 추가
+```
+`8b8a011`(집 PC, v1.0.2)과 이 세션의 안정성 수정 6건이 `app/build.gradle.kts`, `EditorScreen.kt`에서 충돌해 머지했음 — 양쪽 수정 모두 반영됨 (줄 간격/자간 스타일 + 줄 번호 Text 1개 최적화, targetSdk 36 + stale-match 가드 등). 에뮬레이터에서 정상 동작 확인함.
 
-## 2. Play Console 상태
+### 이번 세션(회사 PC, 2026-09-30~10-07)에서 고친 것 — 안정성/접근성 6건
+1. 찾기/바꾸기 중 디바운스 전에 치환을 누르면 발생하던 크래시 수정 (stale match 범위 가드)
+2. 백그라운드 전환(ON_STOP) 시 편집 내용 즉시 저장 — `onCleared()`의 flushSave가 실제로는 동작 안 했던 문제
+3. 찾기 연산을 메인 스레드 밖(Dispatchers.Default)으로 이동 — 긴 노트에서 ANR 위험 완화
+4. 줄 번호 렌더링을 줄마다 Text 생성 → Text 1개로 합쳐 컴포저블 수 O(1)로
+5. Undo/Redo, 휴지통 복원/삭제 버튼에 접근성 설명(contentDescription) 추가
+6. 찾기 옵션(대소문자/전체단어) 토글에 접근성 설명 + on/off 상태 노출
 
-- **비공개 테스트 트랙**: Alpha
-- **v1.0.2 + 새 피처 그래픽**: 2026-08-02 "검토를 위해 제출" 완료 → 검토 중
-- **프로덕션 액세스 요건**: 12명 이상 테스터 옵트인 + 14일 연속 유지
-- **현재 옵트인 인원**: 4명 (2026-08-02 기준, 이후 갱신 필요)
+### 집 PC(8b8a011, v1.0.2)에서 고친 것 (이미 origin에 있던 것, 참고용)
+- 에디터 키보드 안 뜨던 버그 (`fillMaxHeight` → `defaultMinSize(minHeight=availableHeight)`)
+- 버전 표기 3곳 불일치 → `BuildConfig.VERSION_NAME`으로 일원화
+- 설정 화면 License/개인정보처리방침 링크 활성화
+- 휴지통 영구삭제·전체비우기 확인 다이얼로그 추가
+- 치환/실행취소 후 커서 위치 보존 (TextRange 명시)
+- D2Coding 자간 축소로 세로로 길어 보이는 문제 완화
+- 스토어 피처 그래픽 교체
+
+### 릴리스 노트 초안 (이번 세션 수정분 기준, 아직 미사용)
+> - 찾기/바꾸기 도중 빠르게 편집한 직후 치환을 누르면 발생할 수 있던 크래시를 수정했습니다.
+> - 앱을 백그라운드로 전환할 때 편집 중이던 내용이 즉시 저장되어, 최근 메모가 사라지는 문제를 막았습니다.
+> - 긴 노트에서 찾기 기능이 버벅이지 않도록 검색 연산을 최적화했습니다.
+> - 긴 노트에서 줄 번호 표시로 인한 지연을 개선했습니다.
+> - 스크린리더 사용자를 위해 되돌리기/다시 실행, 휴지통 복원/삭제, 찾기 옵션 버튼에 설명을 추가했습니다.
+
+## 2. Play Console 상태 (마지막 확인 2026-09-30, 갱신 필요)
+
 - **개발자 계정**: entropy.gibran@gmail.com (Entropy by Gibran, 개인 계정)
+- **프로덕션 액세스**: 2026-09-19에 "추가 테스트 필요"로 1차 반려됨
+- **현재 비공개 테스트 재진행 중**: 12명 이상 테스터로 14일 연속 유지, 9/30 기준 약 11일차 (10/3 전후 14일 충족 예상 — **이 컴퓨터에서는 그 이후 상황 확인 안 됨**)
+- **테스터들에게 피드백 요청 메일 발송함** (9/30 기준) — 응답 확인 안 됨
+- 1차 신청서에 넣은 "비공개 테스트 참여도" 답변은 Reddit(r/AndroidAppTesters) 테스터 2명이 보고한 온보딩 버그(그룹 권한 오류, 설치 버튼 무반응)를 근거로 작성해 제출했음
 
-## 3. Reddit 테스터 모집
-
-### 게시글
-- r/GooglePlayClosedTest: https://www.reddit.com/r/GooglePlayClosedTest/comments/1vch2hj/
-- r/AndroidAppTesters: https://www.reddit.com/r/AndroidAppTesters/comments/1vch302/
-
-### 테스터 그룹 (모두 웹 공개로 설정 완료)
-- 그룹 가입: https://groups.google.com/g/monomemo-testers
+### 테스터 그룹
+- 그룹 가입: https://groups.google.com/g/monomemo-testers (전체 공개로 설정됨)
 - 옵트인: https://play.google.com/apps/testing/com.monomemo.app
+- 2026-09-11 확인 시 그룹 회원 15명, 대기 초대 1명(leehyoinn77)
 
-### 상호테스트 진행 상황
+### 스토어 등록정보 (완료)
+- 휴대전화 스크린샷 5장 전부 1080×2160(2:1)으로 재촬영·교체 완료, Play Console에 업로드·반영 확인함 (`screenshots/`, `tools/seed-screenshots.sql`, `tools/README.md` 참고)
+- 개인 메모/AI 프롬프트 등 부적절한 데모 콘텐츠는 모두 정책 안전한 샘플로 교체함
 
-| 상대 | 앱 | 상태 | 비고 |
-|---|---|---|---|
-| Blobby72 | DMR Launcher (런처) | 🔜 대기 | 상대 그룹도 members-only 오류 있어서 영문으로 해결법 안내 댓글 남김. 상대가 고치면 재시도 필요 |
-| Lanky-Bed2154 | Chutebol (축구 게임) | ✅ 완료 | 설치·테스트·피드백 댓글 게시 완료 |
-| ramonfsk_ | SipPace (음주 페이스 앱, 성인 인증 필요) | ⏳ 보류 | 사용법 설명 부족하다고 피드백만 남김, 옵트인은 아직 안 함 (내용 이해 후 판단) |
-| IceTrue7012 | Color Sudoku + Alarminator (2개 요구) | ✅ 완료 | 둘 다 설치·테스트·피드백 댓글 게시 완료 (아래 버그 발견) |
+## 3. 다음 세션(집 PC)에서 할 일
 
-### 설치된 상호테스트 앱 (14일 유지 필요 — 삭제 금지)
+1. [ ] **`monomemo-upload.keystore` 파일 찾기** — 이게 최우선. 찾으면 회사 PC로도 옮겨서 양쪽에서 서명 빌드 가능하게 할 것
+2. [ ] Play Console 접속해서 프로덕션 액세스 신청 가능 여부(14일 요건 충족했는지) 확인
+3. [ ] 테스터 피드백 메일 응답 확인
+4. [ ] 요건 충족 시 → 이번 세션에서 고친 안정성 개선 6건을 반영한 새 버전(versionCode 5, 1.0.4)을 비공개 테스트에 업로드 → 안정화 확인 → 프로덕션 재신청
+   - 프로덕션 신청서 "피드백 수집 및 앱 개선" 문항에 위 릴리스 노트 초안 활용 가능
+5. [ ] 서명 키 확보 후 `./gradlew :app:bundleRelease`로 AAB 생성, `app/build/outputs/bundle/release/app-release.aab` 확인 후 Play Console에 업로드
 
-| 앱 | 패키지명 | 설치일(추정) | 삭제 가능일 |
-|---|---|---|---|
-| Chutebol | com.gunnarpolte.chutebol | 2026-08-04 | 2026-08-18 이후 |
-| Color Sudoku | com.deepdyno.colorsudoku | 2026-08-04 | 2026-08-18 이후 |
-| Alarminator | com.alarminator | 2026-08-04 | 2026-08-18 이후 |
+## 4. 참고 — 개발 환경 팁
 
-> ⚠️ 정확한 `firstInstallTime`은 `adb shell dumpsys package <pkg> | grep firstInstallTime`으로 재확인 필요 (다음 세션에서 폰 연결 시)
-
-### 테스트 중 발견한 버그 (상대 개발자에게 피드백 완료)
-- **Alarminator**: "+"(알람 추가) FAB가 제스처 내비게이션 바에 가까이 붙어있어 상단 일부만 터치됨 → 인셋 패딩 조정 제안함
-- **Color Sudoku**: 버그는 아니지만 색맹 접근성(색 구분 지역에 패턴/텍스처 추가) 질문 남김
-
-## 4. 다음 세션에서 할 일
-
-1. [ ] 폰 재연결 후 상호테스트 앱들 정확한 설치일 재확인
-2. [ ] Blobby72(DMR Launcher) 그룹 수정 여부 확인 → 수정됐으면 가입·옵트인·설치 진행
-3. [ ] ramonfsk_(SipPace) 답변 왔는지 확인 → 사용법 이해되면 옵트인 여부 결정
-4. [ ] Play Console 옵트인 인원수 갱신 확인 (목표: 12명 이상, 여유 있게 14~15명 권장)
-5. [ ] 14일 경과(2026-08-18) 후 상호테스트 앱들 정리(삭제) 가능
-6. [ ] 12명·14일 요건 충족 시 → 프로덕션 액세스 신청
-
-## 5. 참고 — 개발 환경 팁
-
-- SDK 36 로컬 설치됨, AGP 8.7.3 + compileSdk 36은 `gradle.properties`에 `android.suppressUnsupportedCompileSdk=36` 필요
+- SDK 36 필요, AGP 8.7.3 + compileSdk 36은 `gradle.properties`에 `android.suppressUnsupportedCompileSdk=36` 필요 (이미 반영됨)
 - 릴리스 AAB는 11MB+ 라 브라우저 자동 업로드(10MB 제한) 불가 → Play Console에 항상 수동 드래그드롭 필요
 - adb 연결 끊기면 `adb kill-server && adb start-server` 후 폰에서 USB 디버깅 허용 팝업 재확인
+- `local.properties`, `keystore.properties`는 gitignore됨 — 컴퓨터마다 각자 만들어야 함 (내용은 채팅에 붙여넣지 말 것)
