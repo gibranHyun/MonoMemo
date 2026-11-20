@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.monomemo.app.R
 import com.monomemo.app.data.settings.SettingsDataStore
+import com.monomemo.app.ui.components.AppLogoIcon
 import com.monomemo.app.ui.theme.AccentOrange
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -275,21 +276,7 @@ fun SettingsScreen(
                     .padding(horizontal = 20.dp, vertical = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                // Orange rounded square "M" logo
-                Box(
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(AccentOrange),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        "M",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                    )
-                }
+                AppLogoIcon(size = 64.dp, cornerRadius = 16.dp)
 
                 Spacer(modifier = Modifier.height(12.dp))
 

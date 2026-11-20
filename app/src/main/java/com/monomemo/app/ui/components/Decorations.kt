@@ -1,6 +1,7 @@
 package com.monomemo.app.ui.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,11 +9,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -20,7 +23,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.monomemo.app.R
 import com.monomemo.app.ui.theme.AccentBlue
 import com.monomemo.app.ui.theme.AccentLime
 import com.monomemo.app.ui.theme.AccentOrange
@@ -331,18 +337,23 @@ fun DrawerTrashIcon(
 }
 
 @Composable
-fun AppLogoIcon(modifier: Modifier = Modifier) {
-    Canvas(modifier = modifier.size(28.dp)) {
-        val w = size.width
-        val h = size.height
-        val cornerRadius = 6.dp.toPx()
-
-        drawRoundRect(
-            color = AccentOrange,
-            topLeft = Offset(0f, 0f),
-            size = Size(w, h),
-            cornerRadius = androidx.compose.ui.geometry.CornerRadius(cornerRadius, cornerRadius),
+fun AppLogoIcon(
+    modifier: Modifier = Modifier,
+    size: Dp = 28.dp,
+    cornerRadius: Dp = 6.dp,
+) {
+    Box(
+        modifier = modifier
+            .size(size)
+            .clip(RoundedCornerShape(cornerRadius))
+            .background(AccentOrange),
+        contentAlignment = Alignment.Center,
+    ) {
+        // Launchers mask the inner 72/108 of an adaptive icon; scale the same way so this matches the home screen.
+        Image(
+            painter = painterResource(R.drawable.ic_launcher_foreground),
+            contentDescription = null,
+            modifier = Modifier.size(size * (108f / 72f)),
         )
-        // "M" letter in white - intentionally not drawn, just the orange square
     }
 }

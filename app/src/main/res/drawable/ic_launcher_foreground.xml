@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Pencil drawn upright around (54,54), then tilted so the tip points bottom-left. -->
+    <group
+        android:rotation="45"
+        android:pivotX="54"
+        android:pivotY="54">
+        <!-- Eraser -->
+        <path
+            android:fillColor="#E91E63"
+            android:pathData="M46,32 V30 A8,8 0 0 1 62,30 V32 Z" />
+        <!-- Ferrule -->
+        <path
+            android:fillColor="#FFD9A8"
+            android:pathData="M46,32 h16 v4 h-16 z" />
+        <!-- Body -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M46,36 h16 v34 h-16 z" />
+        <!-- Facet line -->
+        <path
+            android:fillColor="#14000000"
+            android:pathData="M53.2,36 h1.6 v34 h-1.6 z" />
+        <!-- Wood tip -->
+        <path
+            android:fillColor="#FFE0B2"
+            android:pathData="M46,70 h16 L54,84 Z" />
+        <!-- Graphite -->
+        <path
+            android:fillColor="#1E2433"
+            android:pathData="M51.2,79 h5.6 L54,84 Z" />
+    </group>
+</vector>
