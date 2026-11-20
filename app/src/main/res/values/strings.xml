@@ -12,6 +12,7 @@
     <string name="tab_label">TAB</string>
     <string name="line_count">%1$d lines</string>
     <string name="char_count">%1$d chars</string>
+    <string name="saved_indicator">Saved</string>
 
     <!-- AppBar actions -->
     <string name="open_menu">Open menu</string>

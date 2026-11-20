@@ -40,6 +40,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -149,6 +151,7 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
     var showMenu by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
 
     // Export file
     val exportLauncher = rememberLauncherForActivityResult(
@@ -227,7 +230,10 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                         DrawerContent(
                             notes = activeNotes,
                             currentNoteId = currentNoteId,
-                            onNewNote = { appViewModel.createNewNote() },
+                            onNewNote = {
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                appViewModel.createNewNote()
+                            },
                             onNoteSelect = { appViewModel.openNote(it) },
                             onTrashClick = { appViewModel.navigateTo(AppScreen.Trash) },
                             onSettingsClick = { appViewModel.navigateTo(AppScreen.Settings) },
@@ -285,7 +291,10 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                     actions = {
                                         val undoDescription = stringResource(R.string.undo_action)
                                         IconButton(
-                                            onClick = { editorViewModel.undo() },
+                                            onClick = {
+                                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                                editorViewModel.undo()
+                                            },
                                             enabled = canUndo,
                                             modifier = Modifier.semantics {
                                                 contentDescription = undoDescription
@@ -322,7 +331,10 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                         }
                                         val redoDescription = stringResource(R.string.redo_action)
                                         IconButton(
-                                            onClick = { editorViewModel.redo() },
+                                            onClick = {
+                                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                                editorViewModel.redo()
+                                            },
                                             enabled = canRedo,
                                             modifier = Modifier.semantics {
                                                 contentDescription = redoDescription
@@ -419,6 +431,7 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                                 text = { Text(stringResource(R.string.delete), color = AccentPink) },
                                                 onClick = {
                                                     showMenu = false
+                                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                                     currentNoteId?.let {
                                                         appViewModel.deleteNote(it)
                                                         scope.launch {
@@ -485,9 +498,18 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
             TrashScreen(
                 trashNotes = trashNotes,
                 onBack = { appViewModel.navigateTo(AppScreen.Editor) },
-                onRestore = { appViewModel.restoreNote(it) },
-                onDeletePermanently = { appViewModel.deletePermanently(it) },
-                onEmptyAll = { appViewModel.emptyTrash() },
+                onRestore = {
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    appViewModel.restoreNote(it)
+                },
+                onDeletePermanently = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    appViewModel.deletePermanently(it)
+                },
+                onEmptyAll = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    appViewModel.emptyTrash()
+                },
             )
         }
 

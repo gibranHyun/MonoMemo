@@ -73,6 +73,10 @@ class EditorViewModel(
     private var lastSnapshotText: String = ""
     private var snapshotJob: Job? = null
 
+    // 자동 저장 완료 시각(ms). 값이 바뀔 때마다 새로운 저장이 일어났다는 신호로 UI에서 관찰한다.
+    private val _saveTick = MutableStateFlow(0L)
+    val saveTick: StateFlow<Long> = _saveTick
+
     private var currentNoteId: Long? = null
     private var saveJob: Job? = null
     private var findJob: Job? = null
@@ -373,6 +377,7 @@ class EditorViewModel(
             content = _content.value.text,
             titleManuallyEdited = _titleManuallyEdited.value,
         )
+        _saveTick.value = System.currentTimeMillis()
     }
 
     override fun onCleared() {

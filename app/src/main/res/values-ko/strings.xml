@@ -9,6 +9,7 @@
     <string name="start_writing">메모를 시작하세요</string>
     <string name="line_count">%1$d줄</string>
     <string name="char_count">%1$d자</string>
+    <string name="saved_indicator">저장됨</string>
 
     <!-- AppBar actions -->
     <string name="open_menu">메뉴 열기</string>

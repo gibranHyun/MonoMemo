@@ -1,5 +1,8 @@
 package com.monomemo.app.ui.editor
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -59,7 +62,9 @@ import com.monomemo.app.ui.theme.HighlightAllLight
 import com.monomemo.app.ui.theme.HighlightCurrentDark
 import com.monomemo.app.ui.theme.HighlightCurrentLight
 import com.monomemo.app.ui.components.PencilEmptyState
+import com.monomemo.app.ui.theme.AccentLime
 import com.monomemo.app.ui.theme.AccentOrange
+import kotlinx.coroutines.delay
 
 @Composable
 fun EditorScreen(
@@ -71,8 +76,19 @@ fun EditorScreen(
     val editorMode by viewModel.editorMode.collectAsState()
     val findResult by viewModel.findResult.collectAsState()
     val currentMatchIndex by viewModel.currentMatchIndex.collectAsState()
+    val saveTick by viewModel.saveTick.collectAsState()
     val scrollState = rememberScrollState()
     var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
+    var showSaved by remember { mutableStateOf(false) }
+
+    // 자동 저장이 일어날 때마다 짧게 "저장됨"을 보여준 뒤 스스로 사라진다(별도 dismiss 불필요).
+    LaunchedEffect(saveTick) {
+        if (saveTick != 0L) {
+            showSaved = true
+            delay(1100)
+            showSaved = false
+        }
+    }
 
     val app = LocalContext.current.applicationContext as MonoMemoApp
     val lineNumbersEnabled by app.settingsDataStore.lineNumbersEnabled.collectAsState(initial = false)
@@ -232,6 +248,19 @@ fun EditorScreen(
                 )
             }
             Box(modifier = Modifier.weight(1f))
+            AnimatedVisibility(visible = showSaved, enter = fadeIn(), exit = fadeOut()) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Canvas(modifier = Modifier.size(5.dp)) {
+                        drawCircle(AccentLime)
+                    }
+                    Text(
+                        text = stringResource(R.string.saved_indicator),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = AccentLime,
+                        modifier = Modifier.padding(start = 5.dp, end = 10.dp),
+                    )
+                }
+            }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = stringResource(R.string.line_count, lineCount),
