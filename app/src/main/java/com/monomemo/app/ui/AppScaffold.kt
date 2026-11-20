@@ -276,7 +276,7 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                         )
                                     },
                                     colors = TopAppBarDefaults.topAppBarColors(
-                                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                                        containerColor = MaterialTheme.colorScheme.surface,
                                     ),
                                     navigationIcon = {
                                         IconButton(onClick = {
@@ -457,6 +457,7 @@ private fun AppScaffoldContent(app: MonoMemoApp) {
                                         }
                                     },
                                 )
+                                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                                 }
                             }
 
