@@ -22,6 +22,7 @@ class SettingsDataStore(private val context: Context) {
         val FONT_SIZE_SP = intPreferencesKey("fontSizeSp")
         val WRAP_ENABLED = booleanPreferencesKey("wrapEnabled")
         val LINE_NUMBERS_ENABLED = booleanPreferencesKey("lineNumbersEnabled")
+        val WELCOME_NOTE_SHOWN = booleanPreferencesKey("welcomeNoteShown")
     }
 
     val lastOpenedNoteId: Flow<Long?> = context.dataStore.data.map { prefs ->
@@ -71,6 +72,16 @@ class SettingsDataStore(private val context: Context) {
     suspend fun setLineNumbersEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[Keys.LINE_NUMBERS_ENABLED] = enabled
+        }
+    }
+
+    val welcomeNoteShown: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[Keys.WELCOME_NOTE_SHOWN] ?: false
+    }
+
+    suspend fun setWelcomeNoteShown() {
+        context.dataStore.edit { prefs ->
+            prefs[Keys.WELCOME_NOTE_SHOWN] = true
         }
     }
 }

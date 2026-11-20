@@ -4,6 +4,8 @@
     <string name="untitled">제목 없음</string>
     <string name="new_memo">새 메모</string>
     <string name="imported_memo">가져온 메모</string>
+    <string name="welcome_note_title">MonoMemo에 오신 것을 환영합니다</string>
+    <string name="welcome_note_body">MonoMemo에 오신 것을 환영합니다\n\n이 노트는 자유롭게 고치거나 지워도 괜찮아요. 몇 가지만 둘러보고 시작해보세요.\n\n1. 입력하면 바로 저장됩니다. 저장 버튼은 없어요.\n2. 위쪽 돋보기 아이콘으로 노트 안에서 찾기와 바꾸기를 할 수 있어요.\n3. 왼쪽 위 메뉴 아이콘을 누르면 노트 목록, 휴지통, 설정으로 이동해요.\n4. 노트를 지우면 휴지통으로 가고, 30일 뒤 자동으로 삭제돼요.\n\n짧게라도 며칠 써보고 느낀 점을 알려주시면 다음 업데이트에 바로 반영할게요.</string>
     <string name="start_writing">메모를 시작하세요</string>
     <string name="line_count">%1$d줄</string>
     <string name="char_count">%1$d자</string>

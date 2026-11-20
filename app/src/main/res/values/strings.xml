@@ -6,6 +6,8 @@
     <string name="untitled">Untitled</string>
     <string name="new_memo">New memo</string>
     <string name="imported_memo">Imported memo</string>
+    <string name="welcome_note_title">Welcome to MonoMemo</string>
+    <string name="welcome_note_body">Welcome to MonoMemo\n\nFeel free to edit or delete this note — it is just a quick tour.\n\n1. Everything saves automatically as you type. There is no save button.\n2. Tap the search icon at the top to find and replace text within a note.\n3. Tap the menu icon in the top left for your note list, trash, and settings.\n4. Deleted notes go to Trash and are permanently removed after 30 days.\n\nTry it for a few days and let me know what you think — it will shape the next update.</string>
     <string name="start_writing">Start writing</string>
     <string name="tab_label">TAB</string>
     <string name="line_count">%1$d lines</string>

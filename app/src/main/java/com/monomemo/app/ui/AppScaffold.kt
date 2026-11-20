@@ -98,8 +98,17 @@ fun AppScaffold() {
 private fun AppScaffoldContent(app: MonoMemoApp) {
     val newMemoTitle = stringResource(R.string.new_memo)
     val importedMemoTitle = stringResource(R.string.imported_memo)
+    val welcomeNoteTitle = stringResource(R.string.welcome_note_title)
+    val welcomeNoteBody = stringResource(R.string.welcome_note_body)
     val appViewModel: AppViewModel = viewModel(
-        factory = AppViewModel.Factory(app.noteRepository, app.settingsDataStore, newMemoTitle, importedMemoTitle),
+        factory = AppViewModel.Factory(
+            app.noteRepository,
+            app.settingsDataStore,
+            newMemoTitle,
+            importedMemoTitle,
+            welcomeNoteTitle,
+            welcomeNoteBody,
+        ),
     )
     val editorViewModel: EditorViewModel = viewModel(
         factory = EditorViewModel.Factory(app.noteRepository, newMemoTitle),

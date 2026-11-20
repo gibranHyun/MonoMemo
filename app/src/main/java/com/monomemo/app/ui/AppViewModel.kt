@@ -20,6 +20,8 @@ class AppViewModel(
     private val settingsDataStore: SettingsDataStore,
     private val defaultNewTitle: String = "New memo",
     private val defaultImportTitle: String = "Imported memo",
+    private val welcomeNoteTitle: String = "Welcome to MonoMemo",
+    private val welcomeNoteBody: String = "",
 ) : ViewModel() {
 
     private val _currentNoteId = MutableStateFlow<Long?>(null)
@@ -42,9 +44,17 @@ class AppViewModel(
     private fun loadInitialNote() {
         viewModelScope.launch {
             if (noteRepository.getActiveCount() == 0) {
-                val id = noteRepository.insert(
-                    NoteEntity(title = defaultNewTitle, content = ""),
-                )
+                val isFirstLaunch = !settingsDataStore.welcomeNoteShown.first()
+                val id = if (isFirstLaunch) {
+                    settingsDataStore.setWelcomeNoteShown()
+                    noteRepository.insert(
+                        NoteEntity(title = welcomeNoteTitle, content = welcomeNoteBody),
+                    )
+                } else {
+                    noteRepository.insert(
+                        NoteEntity(title = defaultNewTitle, content = ""),
+                    )
+                }
                 openNote(id)
                 return@launch
             }
@@ -144,10 +154,19 @@ class AppViewModel(
         private val settingsDataStore: SettingsDataStore,
         private val defaultNewTitle: String = "New memo",
         private val defaultImportTitle: String = "Imported memo",
+        private val welcomeNoteTitle: String = "Welcome to MonoMemo",
+        private val welcomeNoteBody: String = "",
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return AppViewModel(noteRepository, settingsDataStore, defaultNewTitle, defaultImportTitle) as T
+            return AppViewModel(
+                noteRepository,
+                settingsDataStore,
+                defaultNewTitle,
+                defaultImportTitle,
+                welcomeNoteTitle,
+                welcomeNoteBody,
+            ) as T
         }
     }
 }
